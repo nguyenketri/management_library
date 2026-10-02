@@ -4,12 +4,24 @@ const { mockDB } = require('../mock/mockData');
 
 // Hàm kiểm tra xem MongoDB thật có đang kết nối hay không
 const isMongoConnected = () => mongoose.connection.readyState === 1;
+const shouldUseMockDB = async (Model) => {
+  if (!isMongoConnected()) {
+    return true;
+  }
+
+  try {
+    const count = await Model.countDocuments();
+    return count === 0;
+  } catch (error) {
+    return true;
+  }
+};
 
 // 1. Lấy danh sách tất cả sách (hỗ trợ tìm kiếm & lọc)
 const getAllBooks = async (filter = {}) => {
   const { keyword, category } = filter;
 
-  if (isMongoConnected()) {
+  if (isMongoConnected() && !(await shouldUseMockDB(Book))) {
     const query = {};
     if (keyword) {
       query.$or = [
@@ -39,7 +51,7 @@ const getAllBooks = async (filter = {}) => {
 
 // 2. Lấy chi tiết sách theo ID
 const getBookById = async (id) => {
-  if (isMongoConnected()) {
+  if (isMongoConnected() && !(await shouldUseMockDB(Book))) {
     return await Book.findById(id);
   }
   return mockDB.books.find((b) => b._id === id) || null;
@@ -56,7 +68,7 @@ const createBook = async (bookData) => {
     throw new Error('Số lượng sách khả dụng không được lớn hơn tổng số sách!');
   }
 
-  if (isMongoConnected()) {
+  if (isMongoConnected() && !(await shouldUseMockDB(Book))) {
     if (isbn) {
       const exists = await Book.findOne({ isbn });
       if (exists) throw new Error(`Mã ISBN "${isbn}" đã tồn tại!`);
@@ -97,7 +109,7 @@ const createBook = async (bookData) => {
 
 // 4. Cập nhật thông tin sách
 const updateBook = async (id, updateData) => {
-  if (isMongoConnected()) {
+  if (isMongoConnected() && !(await shouldUseMockDB(Book))) {
     return await Book.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
   }
 
@@ -114,7 +126,7 @@ const updateBook = async (id, updateData) => {
 
 // 5. Xóa sách
 const deleteBook = async (id) => {
-  if (isMongoConnected()) {
+  if (isMongoConnected() && !(await shouldUseMockDB(Book))) {
     const book = await Book.findById(id);
     if (!book) return null;
     await Book.findByIdAndDelete(id);

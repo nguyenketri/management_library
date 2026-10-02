@@ -3,6 +3,18 @@ const User = require('../models/User');
 const { mockDB } = require('../mock/mockData');
 
 const isMongoConnected = () => mongoose.connection.readyState === 1;
+const shouldUseMockDB = async (Model) => {
+  if (!isMongoConnected()) {
+    return true;
+  }
+
+  try {
+    const count = await Model.countDocuments();
+    return count === 0;
+  } catch (error) {
+    return true;
+  }
+};
 
 // 1. Đăng nhập tài khoản
 const login = async ({ email, password }) => {
@@ -12,7 +24,7 @@ const login = async ({ email, password }) => {
 
   let user = null;
 
-  if (isMongoConnected()) {
+  if (isMongoConnected() && !(await shouldUseMockDB(User))) {
     user = await User.findOne({ email: email.toLowerCase().trim() });
   } else {
     user = mockDB.users.find((u) => u.email.toLowerCase() === email.toLowerCase().trim());
@@ -48,7 +60,7 @@ const register = async ({ name, email, password, role, phone, studentId }) => {
 
   const cleanEmail = email.toLowerCase().trim();
 
-  if (isMongoConnected()) {
+  if (isMongoConnected() && !(await shouldUseMockDB(User))) {
     const existing = await User.findOne({ email: cleanEmail });
     if (existing) {
       throw new Error(`Email "${cleanEmail}" đã được sử dụng bởi tài khoản khác!`);
