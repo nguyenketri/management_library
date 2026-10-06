@@ -13,7 +13,7 @@ const shouldUseMockDB = async (Model) => {
     const count = await Model.countDocuments();
     return count === 0;
   } catch (error) {
-    return true;
+    throw error;
   }
 };
 
@@ -124,6 +124,36 @@ const updateBook = async (id, updateData) => {
   return mockDB.books[index];
 };
 
+const adjustAvailableCopies = async (id, adjustment) => {
+  if (!Number.isInteger(adjustment) || adjustment === 0) {
+    throw new Error('Số lượng điều chỉnh phải là số nguyên khác 0!');
+  }
+
+  if (isMongoConnected() && !(await shouldUseMockDB(Book))) {
+    const availabilityFilter = adjustment < 0
+      ? { availableCopies: { $gte: Math.abs(adjustment) } }
+      : { $expr: { $lte: [{ $add: ['$availableCopies', adjustment] }, '$totalCopies'] } };
+
+    return await Book.findOneAndUpdate(
+      { _id: id, ...availabilityFilter },
+      { $inc: { availableCopies: adjustment } },
+      { new: true, runValidators: true }
+    );
+  }
+
+  const book = mockDB.books.find((item) => item._id === id);
+  if (!book) return null;
+
+  const nextAvailable = Number(book.availableCopies || 0) + adjustment;
+  if (nextAvailable < 0 || nextAvailable > Number(book.totalCopies || 0)) {
+    return null;
+  }
+
+  book.availableCopies = nextAvailable;
+  book.updatedAt = new Date();
+  return book;
+};
+
 // 5. Xóa sách
 const deleteBook = async (id) => {
   if (isMongoConnected() && !(await shouldUseMockDB(Book))) {
@@ -145,5 +175,6 @@ module.exports = {
   getBookById,
   createBook,
   updateBook,
+  adjustAvailableCopies,
   deleteBook,
 };

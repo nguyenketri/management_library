@@ -6,8 +6,10 @@ import Navbar from '../components/Navbar';
 import AuthModal from '../components/AuthModal';
 import BooksView from '../components/BooksView';
 import BorrowsView from '../components/BorrowsView';
+import ReaderDashboard from '../components/ReaderDashboard';
 import BookFormModal from '../components/books/BookFormModal';
 import BorrowModal from '../components/BorrowModal';
+import { addDaysToDate, isOverdue } from '../utils/borrowDateUtils';
 
 export default function HomePage() {
   // 1. Quản lý trạng thái Đăng nhập (Lưu vào localStorage để không mất khi F5)
@@ -58,6 +60,7 @@ export default function HomePage() {
 
   const handleLogout = () => {
     handleUserChange(null);
+    setActiveTab('books');
     alert('Bạn đã đăng xuất thành công.');
   };
 
@@ -226,10 +229,21 @@ export default function HomePage() {
         await borrowApi.extend(borrowId, currentUser._id);
         await fetchData();
       } else {
+        const borrowRecord = borrows.find((record) => record._id === borrowId && record.userId === currentUser._id);
+        if (!borrowRecord || borrowRecord.status !== 'borrowed') {
+          throw new Error('Không tìm thấy phiếu mượn đang hoạt động của bạn.');
+        }
+        if (isOverdue(borrowRecord.dueDate)) {
+          throw new Error('Sách đã quá hạn, không thể gia hạn thêm!');
+        }
+        if (Number(borrowRecord.renewalCount || 0) >= 1) {
+          throw new Error('Bạn đã gia hạn tối đa 1 lần cho cuốn sách này!');
+        }
+
         setBorrows((prev) =>
           prev.map((b) =>
             b._id === borrowId && b.userId === currentUser._id
-              ? { ...b, dueDate: new Date(new Date(b.dueDate).getTime() + 7 * 86400000).toISOString().split('T')[0] }
+              ? { ...b, dueDate: addDaysToDate(b.dueDate, 7), renewalCount: Number(b.renewalCount || 0) + 1 }
               : b
           )
         );
@@ -403,6 +417,15 @@ export default function HomePage() {
             />
           )}
 
+          {activeTab === 'reader' && currentUser?.role === 'member' && (
+            <ReaderDashboard
+              currentUser={currentUser}
+              books={books}
+              borrows={borrows}
+              onQuickBorrow={handleQuickBorrowClick}
+              onExtendBorrow={handleExtendBorrow}
+            />
+          )}
         </main>
       </div>
 

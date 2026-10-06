@@ -36,6 +36,12 @@ const borrowRecordSchema = new mongoose.Schema(
       enum: ['borrowed', 'returned', 'overdue'],
       default: 'borrowed', // Mặc định là đang mượn
     },
+    renewalCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 1,
+    },
     notes: {
       type: String,
       trim: true,

@@ -65,6 +65,16 @@ export default function Navbar({
                 📝 Phiếu Mượn / Trả
               </button>
             </li>
+            {currentUser?.role === 'member' && (
+              <li className="nav-item">
+                <button
+                  className={`btn btn-sm ${activeTab === 'reader' ? 'btn-primary' : 'btn-outline-light text-light border-0'}`}
+                  onClick={() => onTabChange('reader')}
+                >
+                  👤 Tài Khoản Bạn Đọc
+                </button>
+              </li>
+            )}
           </ul>
 
           {/* Right section: Auth status */}

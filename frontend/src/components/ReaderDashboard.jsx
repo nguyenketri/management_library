@@ -1,12 +1,8 @@
 import React from 'react';
+import { formatBorrowDate, getOverdueDays, isOverdue } from '../utils/borrowDateUtils';
 
 const formatCurrency = (value) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value || 0);
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return '—';
-  return new Date(dateStr).toLocaleDateString('vi-VN');
-};
 
 export default function ReaderDashboard({ currentUser, books, borrows, onQuickBorrow, onExtendBorrow }) {
   if (!currentUser || currentUser.role !== 'member') return null;
@@ -19,13 +15,12 @@ export default function ReaderDashboard({ currentUser, books, borrows, onQuickBo
 
   const penaltyTotal = myBorrows.reduce((sum, record) => {
     if (!record.dueDate) return sum;
-    const due = new Date(record.dueDate);
-    const end = record.returnDate ? new Date(record.returnDate) : new Date();
-    const overdueDays = Math.max(0, Math.ceil((end - due) / (1000 * 60 * 60 * 24)));
+    const endDate = record.status === 'returned' && record.returnDate ? record.returnDate : undefined;
+    const overdueDays = getOverdueDays(record.dueDate, endDate);
     return sum + (overdueDays > 0 ? overdueDays * 5000 : 0);
   }, 0);
 
-  const overdueCount = activeBorrows.filter((b) => new Date(b.dueDate) < new Date()).length;
+  const overdueCount = activeBorrows.filter((b) => isOverdue(b.dueDate)).length;
 
   return (
     <div className="mb-4">
@@ -99,7 +94,8 @@ export default function ReaderDashboard({ currentUser, books, borrows, onQuickBo
               ) : (
                 <div className="d-grid gap-3">
                   {activeBorrows.map((record) => {
-                    const isLate = new Date(record.dueDate) < new Date();
+                    const isLate = isOverdue(record.dueDate);
+                    const canExtend = !isLate && Number(record.renewalCount || 0) < 1;
                     const book = books.find((b) => b._id === record.bookId);
                     return (
                       <div key={record._id} className="border border-secondary rounded p-3 bg-black bg-opacity-10">
@@ -107,7 +103,7 @@ export default function ReaderDashboard({ currentUser, books, borrows, onQuickBo
                           <div>
                             <div className="fw-bold text-light">{record.bookTitle}</div>
                             <div className="small text-secondary mt-1">
-                              Hạn trả: <strong>{formatDate(record.dueDate)}</strong>
+                              Hạn trả: <strong>{formatBorrowDate(record.dueDate)}</strong>
                             </div>
                           </div>
                           <span className={`badge ${isLate ? 'bg-danger' : 'bg-success'} px-2 py-1`}>
@@ -122,8 +118,13 @@ export default function ReaderDashboard({ currentUser, books, borrows, onQuickBo
                         )}
 
                         <div className="mt-3 d-flex gap-2 flex-wrap">
-                          <button className="btn btn-primary btn-sm" onClick={() => onExtendBorrow(record._id)}>
-                            Gia hạn +7 ngày
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={() => onExtendBorrow(record._id)}
+                            disabled={!canExtend}
+                            title={canExtend ? '' : 'Phiếu mượn đã quá hạn hoặc đã gia hạn tối đa'}
+                          >
+                            {record.renewalCount ? 'Đã gia hạn' : 'Gia hạn +7 ngày'}
                           </button>
                           <button className="btn btn-outline-light btn-sm" onClick={() => onQuickBorrow(book)} disabled={!book}>
                             Mượn thêm
@@ -153,7 +154,7 @@ export default function ReaderDashboard({ currentUser, books, borrows, onQuickBo
                     <div key={record._id} className="border-bottom border-secondary pb-2">
                       <div className="fw-semibold small">{record.bookTitle}</div>
                       <div className="small text-secondary">
-                        {record.borrowDate ? formatDate(record.borrowDate) : '—'} → {record.returnDate ? formatDate(record.returnDate) : 'Chưa trả'}
+                        {record.borrowDate ? formatBorrowDate(record.borrowDate) : '—'} → {record.returnDate ? formatBorrowDate(record.returnDate) : 'Chưa trả'}
                       </div>
                       <div className="small text-secondary">
                         Trạng thái: <span className={record.status === 'returned' ? 'text-success' : 'text-warning'}>{record.status}</span>
@@ -187,15 +188,14 @@ export default function ReaderDashboard({ currentUser, books, borrows, onQuickBo
                 </thead>
                 <tbody>
                   {myBorrows.map((record) => {
-                    const due = record.dueDate ? new Date(record.dueDate) : null;
-                    const end = record.returnDate ? new Date(record.returnDate) : new Date();
-                    const overdueDays = due ? Math.max(0, Math.ceil((end - due) / (1000 * 60 * 60 * 24))) : 0;
+                    const endDate = record.status === 'returned' && record.returnDate ? record.returnDate : undefined;
+                    const overdueDays = getOverdueDays(record.dueDate, endDate);
                     const penalty = overdueDays > 0 ? overdueDays * 5000 : 0;
 
                     return (
                       <tr key={record._id}>
                         <td>{record.bookTitle}</td>
-                        <td>{formatDate(record.dueDate)}</td>
+                        <td>{formatBorrowDate(record.dueDate)}</td>
                         <td>
                           <span className={penalty > 0 ? 'text-danger' : 'text-success'}>
                             {penalty > 0 ? `${overdueDays} ngày quá hạn` : 'Không phạt'}
