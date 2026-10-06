@@ -65,14 +65,6 @@ export default function Navbar({
                 📝 Phiếu Mượn / Trả
               </button>
             </li>
-            <li className="nav-item">
-              <button
-                className={`btn btn-sm ${activeTab === 'members' ? 'btn-primary' : 'btn-outline-light text-light border-0'}`}
-                onClick={() => onTabChange('members')}
-              >
-                👥 5 Thành Viên
-              </button>
-            </li>
           </ul>
 
           {/* Right section: Auth status */}
@@ -98,9 +90,6 @@ export default function Navbar({
               <div className="d-flex align-items-center gap-2">
                 <div className="text-end d-none d-sm-block">
                   <div className="fw-semibold text-light small">{currentUser.name}</div>
-                  <span className={`badge ${getBadgeColor(currentUser.role)}`} style={{ fontSize: '0.7rem' }}>
-                    {currentUser.role?.toUpperCase()}
-                  </span>
                 </div>
 
                 <div

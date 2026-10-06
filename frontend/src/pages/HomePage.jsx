@@ -6,7 +6,6 @@ import Navbar from '../components/Navbar';
 import AuthModal from '../components/AuthModal';
 import BooksView from '../components/BooksView';
 import BorrowsView from '../components/BorrowsView';
-import MembersView from '../components/MembersView';
 import BookFormModal from '../components/books/BookFormModal';
 import BorrowModal from '../components/BorrowModal';
 
@@ -24,7 +23,7 @@ export default function HomePage() {
     return INITIAL_USERS[0]; // Mặc định là Admin để dễ test
   });
 
-  // 2. Tab giao diện: 'books' | 'borrows' | 'members'
+  // 2. Tab giao diện: 'books' | 'borrows'
   const [activeTab, setActiveTab] = useState('books');
 
   // 3. Trạng thái Auth Modal
@@ -215,6 +214,32 @@ export default function HomePage() {
     }
   };
 
+  const handleExtendBorrow = async (borrowId) => {
+    if (!currentUser) {
+      alert('Vui lòng đăng nhập trước khi gia hạn!');
+      openLoginModal();
+      return;
+    }
+
+    try {
+      if (isBackendConnected) {
+        await borrowApi.extend(borrowId, currentUser._id);
+        await fetchData();
+      } else {
+        setBorrows((prev) =>
+          prev.map((b) =>
+            b._id === borrowId && b.userId === currentUser._id
+              ? { ...b, dueDate: new Date(new Date(b.dueDate).getTime() + 7 * 86400000).toISOString().split('T')[0] }
+              : b
+          )
+        );
+      }
+      alert('Gia hạn sách thành công!');
+    } catch (err) {
+      alert('Lỗi gia hạn: ' + err.message);
+    }
+  };
+
   // Khi bấm nút Mượn nhanh ở từng Card sách
   const handleQuickBorrowClick = (book) => {
     if (!currentUser) {
@@ -257,11 +282,7 @@ export default function HomePage() {
               <p className="text-secondary mb-0">
                 {currentUser ? (
                   <>
-                    Vai trò hiện tại:{' '}
-                    <span className="badge bg-primary text-uppercase px-2 py-1">
-                      {currentUser.role}
-                    </span>{' '}
-                    &bull; MSSV/Mã NV: <code>{currentUser.studentId || 'Chưa cập nhật'}</code>
+                    MSSV/Mã NV: <code>{currentUser.studentId || 'Chưa cập nhật'}</code>
                   </>
                 ) : (
                   'Bạn đang ở chế độ khách vãng lai. Vui lòng đăng nhập để mượn sách.'
@@ -382,13 +403,6 @@ export default function HomePage() {
             />
           )}
 
-          {activeTab === 'members' && (
-            <MembersView
-              borrows={borrows}
-              onSelectUser={handleUserChange}
-              currentUser={currentUser || { role: 'guest' }}
-            />
-          )}
         </main>
       </div>
 
