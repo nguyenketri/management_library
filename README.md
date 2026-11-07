@@ -15,6 +15,7 @@ Hệ thống đã có sẵn 5 tài khoản mẫu để bạn và thầy cô đă
 | **🎓 Độc giả 1** | Lê Hoàng Nam | `namlh@fpt.edu.vn` | `password123` | Tra cứu sách, tạo yêu cầu mượn sách, xem hạn trả |
 | **🎓 Độc giả 2** | Phạm Minh Anh | `anhpm@fpt.edu.vn` | `password123` | Tra cứu sách, tạo yêu cầu mượn sách, xem hạn trả |
 | **🎓 Độc giả 3** | Đặng Tuấn Kiệt | `kietdt@fpt.edu.vn` | `password123` | Tra cứu sách, tạo yêu cầu mượn sách, xem hạn trả |
+| **📊 Quản lý** | Võ Thị Quản Lý | `manager@library.edu.vn` | `password123` | Xem dashboard và báo cáo (sách, bạn đọc, mượn/trả, quá hạn) |
 
 > **💡 Tính năng phím tắt tiện lợi:** Trong Modal Đăng nhập có sẵn các nút bấm 1-click (👑 Admin, 📚 Thủ thư, 🎓 Sinh viên) để tự động điền tài khoản mà không cần gõ phím!
 
@@ -94,6 +95,11 @@ Management_Library/
 | `POST` | `/api/borrows` | Lập phiếu mượn sách mới |
 | `PUT` | `/api/borrows/:id/return` | Xác nhận trả sách |
 | `GET` | `/api/users` | Lấy danh sách 5 thành viên |
+| `GET` | `/api/reports/dashboard` | Tổng quan hoạt động (`?from=YYYY-MM-DD&to=YYYY-MM-DD`) |
+| `GET` | `/api/reports/books` | Báo cáo sách (`?category=...&keyword=...&availability=available\|out\|borrowed`) |
+| `GET` | `/api/reports/readers` | Báo cáo bạn đọc (`?from=...&to=...&keyword=...&hasActiveLoan=true\|false`) |
+| `GET` | `/api/reports/borrows` | Báo cáo mượn/trả (`?from=...&to=...&category=...&status=borrowed\|returned\|overdue&groupBy=day\|month`) |
+| `GET` | `/api/reports/overdue` | Báo cáo quá hạn (`?category=...&keyword=...&minDays=1`) |
 
 ---
 

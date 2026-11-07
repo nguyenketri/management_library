@@ -5,6 +5,7 @@ const router = express.Router();
 const bookRoutes = require('./bookRoutes');
 const userRoutes = require('./userRoutes');
 const borrowRoutes = require('./borrowRoutes');
+const reportRoutes = require('./reportRoutes');
 
 // Endpoint kiểm tra trạng thái hoạt động: GET /api/health
 router.get('/health', (req, res) => {
@@ -22,5 +23,6 @@ router.use('/auth', authRoutes);         // Đăng ký / Đăng nhập: /api/aut
 router.use('/books', bookRoutes);       // Quản lý sách: /api/books
 router.use('/users', userRoutes);       // Quản lý 5 thành viên: /api/users
 router.use('/borrows', borrowRoutes);   // Quản lý mượn/trả: /api/borrows
+router.use('/reports', reportRoutes);   // Báo cáo cho Quản lý: /api/reports
 
 module.exports = router;

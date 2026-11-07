@@ -49,6 +49,16 @@ const initialUsers = [
     phone: '0985334455',
     studentId: 'SE170003',
     createdAt: new Date('2026-03-01'),
+  },
+  {
+    _id: 'usr_006',
+    name: 'Võ Thị Quản Lý',
+    email: 'manager@library.edu.vn',
+    password: 'password123',
+    role: 'manager', // Quản lý thư viện - xem dashboard và báo cáo
+    phone: '0906789012',
+    studentId: 'MGR-01',
+    createdAt: new Date('2026-03-05'),
   }
 ];
 

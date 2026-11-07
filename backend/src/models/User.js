@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['admin', 'librarian', 'member'],
+      enum: ['admin', 'librarian', 'member', 'manager'],
       default: 'member', // Mặc định là độc giả
     },
     phone: {

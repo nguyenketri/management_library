@@ -56,6 +56,15 @@ export const INITIAL_USERS = [
     studentId: 'SE170003',
     roleLabel: 'Độc Giả (Sinh viên 3)',
   },
+  {
+    _id: 'usr_006',
+    name: 'Võ Thị Quản Lý',
+    email: 'manager@library.edu.vn',
+    role: 'manager', // Quản lý thư viện
+    phone: '0906789012',
+    studentId: 'MGR-01',
+    roleLabel: 'Quản Lý (Manager)',
+  },
 ];
 
 // Danh sách sách mẫu ban đầu
