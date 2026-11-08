@@ -25,11 +25,6 @@ const bookApi = {
   delete: (id) => {
     return axiosClient.delete(`/books/${id}`);
   },
-
-  // Kiểm tra health check backend
-  checkHealth: () => {
-    return axiosClient.get('/health');
-  }
 };
 
 export default bookApi;
