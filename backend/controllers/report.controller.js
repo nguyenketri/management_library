@@ -1,3 +1,4 @@
+// Người phụ trách: Người 1 (Báo cáo cho Quản lý)
 const Book = require('../models/book.model');
 const User = require('../models/user.model');
 const Borrow = require('../models/borrow.model');
@@ -103,7 +104,8 @@ const loadData = async () => {
   const [books, users, borrows] = await Promise.all([
     Book.find().lean(),
     User.find().select('-password').lean(),
-    Borrow.find().sort({ createdAt: -1 }).lean(),
+    // Báo cáo chỉ tính phiếu đã thực sự mượn (bỏ phiếu đang chờ duyệt / bị từ chối)
+    Borrow.find({ status: { $nin: ['pending', 'rejected'] } }).sort({ createdAt: -1 }).lean(),
   ]);
 
   const bookMap = new Map(books.map((book) => [String(book._id), book]));

@@ -18,9 +18,10 @@ import ReportPage from '../pages/reports/ReportPage';
 import NotFoundPage from '../pages/NotFoundPage';
 
 // Vai trò được vào từng trang (khớp với menu trong constants/menu.js)
-const STAFF = ['librarian', 'admin'];
-const ADMIN = ['admin'];
-const REPORT = ['manager', 'admin'];
+const LIBRARIAN = ['librarian'];                     // nghiệp vụ thư viện
+const ADMIN = ['admin'];                             // quản trị tài khoản
+const MANAGER = ['manager'];                         // báo cáo
+const BOOK_VIEWERS = ['member', 'librarian', 'manager'];
 
 // Đã khai báo sẵn route cho tất cả trang -> mỗi người chỉ sửa file trang của mình
 export default function AppRoutes() {
@@ -37,16 +38,16 @@ export default function AppRoutes() {
       {/* Phải đăng nhập */}
       <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
         <Route path="/dashboard" element={<HomePage />} />
-        <Route path="/books" element={<BookListPage />} />
-        <Route path="/books/:id" element={<BookDetailPage />} />
         <Route path="/profile" element={<ProfilePage />} />
 
         {/* Phải đúng vai trò */}
-        <Route path="/categories" element={<ProtectedRoute roles={STAFF}><CategoryPage /></ProtectedRoute>} />
-        <Route path="/borrows" element={<ProtectedRoute roles={STAFF}><BorrowListPage /></ProtectedRoute>} />
-        <Route path="/cards" element={<ProtectedRoute roles={STAFF}><CardListPage /></ProtectedRoute>} />
+        <Route path="/books" element={<ProtectedRoute roles={BOOK_VIEWERS}><BookListPage /></ProtectedRoute>} />
+        <Route path="/books/:id" element={<ProtectedRoute roles={BOOK_VIEWERS}><BookDetailPage /></ProtectedRoute>} />
+        <Route path="/categories" element={<ProtectedRoute roles={LIBRARIAN}><CategoryPage /></ProtectedRoute>} />
+        <Route path="/borrows" element={<ProtectedRoute roles={LIBRARIAN}><BorrowListPage /></ProtectedRoute>} />
+        <Route path="/cards" element={<ProtectedRoute roles={LIBRARIAN}><CardListPage /></ProtectedRoute>} />
         <Route path="/members" element={<ProtectedRoute roles={ADMIN}><MemberListPage /></ProtectedRoute>} />
-        <Route path="/reports" element={<ProtectedRoute roles={REPORT}><ReportPage /></ProtectedRoute>} />
+        <Route path="/reports" element={<ProtectedRoute roles={MANAGER}><ReportPage /></ProtectedRoute>} />
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />

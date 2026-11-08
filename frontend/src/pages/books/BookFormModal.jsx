@@ -1,6 +1,7 @@
 // Người phụ trách: Người 2 (Kho sách)
 // TODO: điền sẵn dữ liệu khi sửa, gọi bookApi.create / bookApi.update
 import Modal from '../../components/common/Modal';
+import Select from '../../components/common/Select';
 import { CATEGORIES } from '../../constants/sampleData';
 
 export default function BookFormModal({ open, onClose, book }) {
@@ -22,9 +23,10 @@ export default function BookFormModal({ open, onClose, book }) {
         <div className="col-md-5"><label className="form-label">Năm xuất bản</label><input type="number" className="form-control" defaultValue={book?.publishedYear} placeholder="2008" /></div>
         <div className="col-md-7">
           <label className="form-label">Danh mục</label>
-          <select className="form-select" defaultValue={book?.category}>
-            {CATEGORIES.map((c) => <option key={c._id}>{c.name}</option>)}
-          </select>
+          <Select
+            defaultValue={book?.category}
+            options={CATEGORIES.map((c) => ({ value: c.name, label: c.name }))}
+          />
         </div>
         <div className="col-md-5"><label className="form-label">Số lượng</label><input type="number" min="0" className="form-control" defaultValue={book?.totalCopies ?? 1} /></div>
         <div className="col-12"><label className="form-label">ISBN</label><input className="form-control" defaultValue={book?.isbn} placeholder="978-0132350884" /></div>

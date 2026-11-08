@@ -516,26 +516,28 @@ a {
 
 /* Thẻ thư viện */
 .member-card {
+  --card-line: rgba(14, 26, 20, 0.07);   /* màu vân trang trí */
   position: relative;
   aspect-ratio: 1.586 / 1;
   border-radius: 20px;
   padding: 1.25rem 1.4rem;
-  background: var(--lime);
+  background-color: var(--lime);
+  background-image:
+    radial-gradient(120% 90% at 0% 0%, rgba(255, 255, 255, 0.35), transparent 55%),
+    repeating-radial-gradient(circle at 115% 120%, transparent 0 14px, var(--card-line) 14px 15px);
   color: var(--lime-ink);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
 }
 
-.member-card::after {
-  content: '';
-  position: absolute;
-  right: -60px;
-  top: -60px;
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  border: 30px solid rgba(14, 26, 20, 0.08);
+.member-card .card-type {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.6;
 }
 
 .member-card .brand {
@@ -656,19 +658,206 @@ a {
   color: var(--lime-ink);
 }
 
+/* Dropdown (menu xổ xuống) */
 .dropdown-menu {
+  padding: 0.45rem;
   background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 18px;
+  box-shadow: 0 24px 48px -20px rgba(0, 0, 0, 0.85);
+}
+
+.dropdown-menu.show {
+  animation: menu-in 0.16s ease-out;
+}
+
+@keyframes menu-in {
+  from { opacity: 0; transform: translateY(-6px); }
 }
 
 .dropdown-item {
-  color: var(--text);
-  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background 0.12s ease, color 0.12s ease;
 }
 
-.dropdown-item:hover {
+.dropdown-item svg {
+  color: var(--text-3);
+  transition: color 0.12s ease;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
   background: var(--panel-2);
+  color: var(--text);
+}
+
+.dropdown-item:hover svg,
+.dropdown-item:focus svg {
+  color: var(--lime);
+}
+
+.dropdown-item.item-danger,
+.dropdown-item.item-danger svg {
+  color: var(--coral);
+}
+
+.dropdown-item.item-danger:hover {
+  background: rgba(242, 107, 79, 0.12);
+  color: var(--coral);
+}
+
+.dropdown-divider {
+  margin: 0.4rem 0.3rem;
+  border-color: var(--line);
+  opacity: 1;
+}
+
+/* Nút mở menu tài khoản trên topbar */
+.user-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.3rem 0.6rem 0.3rem 0.3rem;
+  border-radius: 999px;
+  color: var(--text) !important;
+  text-decoration: none !important;
+  transition: background 0.15s ease;
+}
+
+.user-toggle:hover,
+.user-toggle[aria-expanded='true'] {
+  background: var(--panel-2);
+}
+
+.user-toggle-arrow {
+  color: var(--text-3);
+  transition: transform 0.2s ease;
+}
+
+.user-toggle[aria-expanded='true'] .user-toggle-arrow {
+  transform: rotate(180deg);
+}
+
+/* Menu tài khoản */
+.user-menu {
+  width: 270px;
+}
+
+.user-menu-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.6rem 0.85rem;
+  margin-bottom: 0.35rem;
+  border-bottom: 1px solid var(--line);
+}
+
+/* Ô chọn tự vẽ (components/common/Select.jsx) */
+.select-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 0.875rem;
+  text-align: left;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.select-btn:hover {
+  border-color: var(--text-3);
+}
+
+.select-btn:focus-visible,
+.select-btn.is-open {
+  outline: 0;
+  border-color: var(--lime);
+  box-shadow: 0 0 0 3px rgba(216, 255, 92, 0.15);
+}
+
+.select-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.select-btn > span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.select-placeholder {
+  color: var(--text-3);
+}
+
+.select-arrow {
+  flex: none;
+  color: var(--text-3);
+  transition: transform 0.2s ease;
+}
+
+.select-btn.is-open .select-arrow {
+  transform: rotate(180deg);
+  color: var(--lime);
+}
+
+.select-list {
+  position: fixed;
+  z-index: 2000;
+  max-height: 260px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0.35rem;
+  list-style: none;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 24px 48px -20px rgba(0, 0, 0, 0.85);
+  animation: menu-in 0.14s ease-out;
+}
+
+.select-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
+  color: var(--text-2);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.select-option.is-active {
+  background: var(--panel-2);
+  color: var(--text);
+}
+
+.select-option.is-selected {
+  color: var(--lime);
+  font-weight: 700;
+}
+
+.select-option.is-disabled {
+  color: var(--text-3);
+  cursor: not-allowed;
+  background: transparent;
 }
 
 .pagination .page-link {
@@ -1134,7 +1323,8 @@ a {
 }
 
 .lp-cta .member-card {
-  background: var(--night);
+  --card-line: rgba(216, 255, 92, 0.08);
+  background-color: var(--night);
   color: var(--text);
   transform: rotate(-5deg);
   box-shadow: 0 30px 50px -25px rgba(0, 0, 0, 0.6);
@@ -1144,9 +1334,6 @@ a {
   background: var(--lime);
 }
 
-.lp-cta .member-card::after {
-  border-color: rgba(216, 255, 92, 0.12);
-}
 
 /* Footer */
 .lp-footer {
@@ -1420,4 +1607,79 @@ a {
   place-items: center;
   background: var(--panel-2);
   color: var(--lime);
+}
+
+/* ---------- 9. Người 1: chọn dòng trong bảng ---------- */
+.row-click {
+  cursor: pointer;
+}
+
+.table tbody tr.is-selected > * {
+  background: rgba(216, 255, 92, 0.08);
+}
+
+/* Thẻ thư viện bị khóa / hết hạn */
+.member-card.is-inactive {
+  --card-line: rgba(233, 245, 236, 0.06);
+  background-color: #3a4a42;
+  color: #c9d6cd;
+}
+
+.member-card.is-inactive .chip {
+  background: rgba(233, 245, 236, 0.25);
+}
+
+.member-card-stamp {
+  position: absolute;
+  top: 46%;
+  right: 1.2rem;
+  z-index: 1;
+  padding: 0.3rem 0.9rem;
+  border: 2px solid var(--coral);
+  border-radius: 8px;
+  color: var(--coral);
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transform: rotate(-8deg);
+  background: rgba(14, 26, 20, 0.6);
+}
+
+/* ---------- 10. Tiền phạt (thu tiền mặt tại quầy) ---------- */
+.fine-box {
+  padding: 1rem 1.1rem;
+  border-radius: 14px;
+  background: rgba(242, 107, 79, 0.1);
+  border: 1px solid rgba(242, 107, 79, 0.35);
+  color: var(--coral);
+}
+
+.fine-amount {
+  font-size: 1.9rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.fine-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+/* Số đếm nhỏ trên tab (vd: Chưa nộp phạt 2) */
+.tab-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  margin-left: 0.4rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: var(--coral);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 800;
 }

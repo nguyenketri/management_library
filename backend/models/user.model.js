@@ -28,6 +28,12 @@ const userSchema = new Schema({
     },
     phone: { type: String, trim: true },
     studentId: { type: String, trim: true },
+    // Tài khoản bị khóa (locked) thì không đăng nhập được
+    status: {
+        type: String,
+        enum: ['active', 'locked'],
+        default: 'active',
+    },
 }, {
     collection: 'users',
     timestamps: true,

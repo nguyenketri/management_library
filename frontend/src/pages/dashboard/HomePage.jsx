@@ -2,6 +2,7 @@
 import { useAuth } from '../../context/AuthContext';
 import ReaderHomePage from './ReaderHomePage';
 import LibrarianHomePage from './LibrarianHomePage';
+import AdminHomePage from './AdminHomePage';
 import DashboardPage from './DashboardPage';
 
 export default function HomePage() {
@@ -9,5 +10,6 @@ export default function HomePage() {
 
   if (role === 'member') return <ReaderHomePage />;        // Độc giả: Sách của tôi
   if (role === 'librarian') return <LibrarianHomePage />;  // Thủ thư: Quầy thủ thư
-  return <DashboardPage />;                                 // Quản lý, Admin: Tổng quan
+  if (role === 'admin') return <AdminHomePage />;          // Admin: Trang quản trị
+  return <DashboardPage />;                                 // Quản lý: Tổng quan
 }

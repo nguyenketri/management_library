@@ -39,8 +39,15 @@ export default function AuthProvider({ children }) {
     setUser(null);
   };
 
+  // Cập nhật thông tin user sau khi sửa hồ sơ (tên trên topbar đổi theo)
+  const updateUser = (info) => {
+    const newUser = { ...user, ...info };
+    localStorage.setItem('user', JSON.stringify(newUser));
+    setUser(newUser);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, login, register, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

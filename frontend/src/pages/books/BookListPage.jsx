@@ -13,7 +13,7 @@ import { isStaff } from '../../constants/menu';
 export default function BookListPage() {
   const [category, setCategory] = useState('all'); // chỉ để demo giao diện tab
   const [openForm, setOpenForm] = useState(false);
-  const staff = isStaff(useAuth().user.role); // chỉ thủ thư / admin được thêm sách
+  const staff = isStaff(useAuth().user.role); // chỉ thủ thư được thêm sách (admin chỉ xem)
 
   return (
     <>

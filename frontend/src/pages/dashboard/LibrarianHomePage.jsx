@@ -1,4 +1,4 @@
-// Người phụ trách: Người 3 (Mượn trả & báo cáo)
+// Người phụ trách: Người 3 (Mượn trả & thu phạt)
 // Trang chủ của THỦ THƯ: việc cần làm hôm nay. TODO: gọi borrowApi + bookApi
 import { useState } from 'react';
 import { Link } from 'react-router-dom';

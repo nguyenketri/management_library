@@ -1,4 +1,4 @@
-// Người phụ trách: Người 3 (Lưu thông & báo cáo)
+// Người phụ trách: Người 1 (Báo cáo)
 // TODO: lấy số liệu từ GET /api/reports/dashboard
 import { Link } from 'react-router-dom';
 import PageHeader from '../../components/common/PageHeader';
