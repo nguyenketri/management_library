@@ -5,15 +5,17 @@ import PageHeader from '../../components/common/PageHeader';
 import StatCard from '../../components/common/StatCard';
 import StatusBadge from '../../components/common/StatusBadge';
 import BookCover from '../../components/common/BookCover';
-import { BOOKS, BORROWS, BORROW_STATUS, MONTHLY_BORROWS, getCurrentUser } from '../../constants/sampleData';
+import { useAuth } from '../../context/AuthContext';
+import { BOOKS, BORROWS, BORROW_STATUS, MONTHLY_BORROWS } from '../../constants/sampleData';
 
 export default function DashboardPage() {
+  const { user } = useAuth();
   const max = Math.max(...MONTHLY_BORROWS.map((m) => m.count));
 
   return (
     <>
       <PageHeader
-        title={`Chào buổi sáng, ${getCurrentUser().name.split(' ').pop()}.`}
+        title={`Chào buổi sáng, ${user.name.split(' ').pop()}.`}
         subtitle="Hôm nay có 3 phiếu sắp đến hạn và 1 phiếu quá hạn."
         actions={<Link to="/borrows" className="btn btn-primary">Xem phiếu mượn</Link>}
       />

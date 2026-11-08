@@ -1318,28 +1318,23 @@ a {
   color: var(--text-3);
 }
 
-/* Ô "Xem như" (chỉ để xem mẫu từng vai trò) */
-.demo-role {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin: 0;
-  padding: 0.25rem 0.35rem 0.25rem 0.85rem;
-  border: 1px dashed var(--text-3);
-  border-radius: 999px;
-  font-size: 0.78rem;
-  color: var(--text-3);
+/* Thông báo trong form */
+.form-error,
+.form-success {
+  padding: 0.65rem 0.9rem;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
 }
 
-.demo-role select {
-  background: var(--panel-2);
-  color: var(--text);
-  border: 0;
-  border-radius: 999px;
-  padding: 0.2rem 0.6rem;
-  font-weight: 700;
-  font-size: 0.8rem;
-  outline: 0;
+.form-error {
+  color: var(--coral);
+  background: rgba(242, 107, 79, 0.12);
+}
+
+.form-success {
+  color: var(--lime);
+  background: rgba(216, 255, 92, 0.1);
 }
 
 /* ---------- 8. Trang của độc giả ---------- */

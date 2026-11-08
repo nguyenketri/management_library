@@ -1,10 +1,10 @@
 import { NavLink, Link } from 'react-router-dom';
 import { MENU } from '../constants/menu';
-import { getCurrentUser } from '../constants/sampleData';
+import { useAuth } from '../context/AuthContext';
 
 // Mỗi vai trò thấy menu riêng (lọc theo roles trong constants/menu.js)
 export default function Sidebar() {
-  const { role } = getCurrentUser();
+  const { role } = useAuth().user;
   const items = MENU.filter((m) => m.roles.includes(role));
 
   return (

@@ -6,14 +6,15 @@ import { IconArrowLeft, IconEdit, IconTrash } from '@tabler/icons-react';
 import BookCover from '../../components/common/BookCover';
 import ReviewSection from './ReviewSection';
 import BookFormModal from './BookFormModal';
-import { BOOKS, getCurrentUser } from '../../constants/sampleData';
+import { useAuth } from '../../context/AuthContext';
+import { BOOKS } from '../../constants/sampleData';
 import { isStaff } from '../../constants/menu';
 
 export default function BookDetailPage() {
   const { id } = useParams();
   const book = BOOKS.find((b) => b._id === id) || BOOKS[0];
   const [openForm, setOpenForm] = useState(false);
-  const staff = isStaff(getCurrentUser().role);
+  const staff = isStaff(useAuth().user.role);
 
   const info = [
     ['Tác giả', book.author],

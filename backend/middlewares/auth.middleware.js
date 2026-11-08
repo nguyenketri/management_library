@@ -8,7 +8,7 @@ const verifyToken = (req, resp, next) => {
 
         // Kiểm tra định dạng Bearer Token
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return resp.status(401).json({ error: 'Access denied. No token provided' });
+            return resp.status(401).json({ error: 'Bạn chưa đăng nhập' });
         }
 
         // Tách lấy token và xác thực
@@ -19,7 +19,7 @@ const verifyToken = (req, resp, next) => {
         req.user = decoded;
         next();
     } catch (err) {
-        return resp.status(401).json({ error: 'Invalid or expired token' });
+        return resp.status(401).json({ error: 'Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại' });
     }
 };
 

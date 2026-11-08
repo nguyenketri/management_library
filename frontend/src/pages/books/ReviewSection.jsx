@@ -1,13 +1,14 @@
 // Người phụ trách: Người 2 (Kho sách)
 // TODO: gọi GET /api/reviews?bookId=..., POST /api/reviews
-import { REVIEWS, getCurrentUser } from '../../constants/sampleData';
+import { useAuth } from '../../context/AuthContext';
+import { REVIEWS } from '../../constants/sampleData';
 
 const Stars = ({ value }) => (
   <span className="stars">{'★'.repeat(value)}<span style={{ opacity: 0.25 }}>{'★'.repeat(5 - value)}</span></span>
 );
 
 export default function ReviewSection() {
-  const canWrite = getCurrentUser().role === 'member'; // chỉ độc giả (đã mượn sách) được viết
+  const canWrite = useAuth().user.role === 'member'; // chỉ độc giả (đã mượn sách) được viết
 
   return (
     <section>

@@ -8,11 +8,14 @@ import '@tabler/core/dist/js/tabler.min.js';
 import './styles/app.css';
 
 import App from './App.jsx';
+import AuthProvider from './context/AuthProvider';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>,
 );

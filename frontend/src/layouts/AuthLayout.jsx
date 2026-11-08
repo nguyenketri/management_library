@@ -1,10 +1,18 @@
-// Người phụ trách: Phần xác thực (làm riêng)
-import { Outlet, Link } from 'react-router-dom';
+// Người phụ trách: Phần xác thực
+import { Outlet, Link, Navigate, useLocation } from 'react-router-dom';
 import BookCover from '../components/common/BookCover';
+import { useAuth } from '../context/AuthContext';
 import { BOOKS } from '../constants/sampleData';
 
 // Khung đăng nhập / đăng ký: nửa trái khối lime + sách 3D, nửa phải là form
 export default function AuthLayout() {
+  const { user } = useAuth();
+  const location = useLocation();
+
+  // Đã đăng nhập (hoặc vừa đăng nhập / đăng ký xong) -> chuyển vào trong.
+  // Nếu trước đó bị bắt đăng nhập khi vào 1 trang nào đó thì quay lại đúng trang đó.
+  if (user) return <Navigate to={location.state?.from || '/dashboard'} replace />;
+
   return (
     <div className="auth">
       <aside className="auth-side">

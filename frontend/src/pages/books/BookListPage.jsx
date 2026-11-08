@@ -6,13 +6,14 @@ import { IconPlus, IconSearch } from '@tabler/icons-react';
 import PageHeader from '../../components/common/PageHeader';
 import BookCover from '../../components/common/BookCover';
 import BookFormModal from './BookFormModal';
-import { BOOKS, CATEGORIES, getCurrentUser } from '../../constants/sampleData';
+import { useAuth } from '../../context/AuthContext';
+import { BOOKS, CATEGORIES } from '../../constants/sampleData';
 import { isStaff } from '../../constants/menu';
 
 export default function BookListPage() {
   const [category, setCategory] = useState('all'); // chỉ để demo giao diện tab
   const [openForm, setOpenForm] = useState(false);
-  const staff = isStaff(getCurrentUser().role); // chỉ thủ thư / admin được thêm sách
+  const staff = isStaff(useAuth().user.role); // chỉ thủ thư / admin được thêm sách
 
   return (
     <>

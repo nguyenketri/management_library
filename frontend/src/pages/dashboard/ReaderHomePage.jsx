@@ -6,15 +6,16 @@ import PageHeader from '../../components/common/PageHeader';
 import StatCard from '../../components/common/StatCard';
 import BookCover from '../../components/common/BookCover';
 import MemberCard from '../../components/common/MemberCard';
-import { BOOKS, BORROWS, CARDS, TODAY, getCurrentUser } from '../../constants/sampleData';
+import { useAuth } from '../../context/AuthContext';
+import { BOOKS, BORROWS, CARDS, TODAY } from '../../constants/sampleData';
 
 const FINE_PER_DAY = 5000;
 const daysBetween = (from, to) => Math.round((Date.parse(to) - Date.parse(from)) / 86400000);
 const money = (n) => n.toLocaleString('vi-VN') + 'đ';
 
 export default function ReaderHomePage() {
-  const user = getCurrentUser();
-  const card = CARDS.find((c) => c.userName === user.name) || CARDS[0];
+  const { user } = useAuth();
+  const card = CARDS.find((c) => c.userName === user.name); // chưa có thẻ -> undefined
   const mine = BORROWS.filter((r) => r.userName === user.name);
   const loans = mine.filter((r) => r.status !== 'returned');
   const history = mine.filter((r) => r.status === 'returned');
@@ -34,7 +35,14 @@ export default function ReaderHomePage() {
           <div className="row g-4">
             {/* Thẻ + số liệu */}
             <div className="col-lg-4 d-flex flex-column gap-3">
-              <MemberCard card={card} />
+              {card ? (
+                <MemberCard card={card} />
+              ) : (
+                <div className="stat">
+                  <div className="fw-bold fs-3 mb-1">Bạn chưa có thẻ thư viện</div>
+                  <div className="text-secondary">Mang thẻ sinh viên đến quầy thủ thư để được cấp thẻ và bắt đầu mượn sách.</div>
+                </div>
+              )}
               <div className="row g-3">
                 <div className="col-6"><StatCard label="Đang mượn" value={`${loans.length}/5`} /></div>
                 <div className="col-6"><StatCard label="Tiền phạt" value={money(currentFine)} hint={currentFine ? 'Trả sách để dừng tính phạt' : 'Không có'} /></div>

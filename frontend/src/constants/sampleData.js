@@ -1,20 +1,8 @@
 // DỮ LIỆU MẪU CHỈ ĐỂ XEM GIAO DIỆN - chưa nối API.
 // Khi nối API: thay bằng dữ liệu gọi từ src/api/*.js rồi xóa dần file này.
 
-// VAI TRÒ ĐANG XEM – chỉ để xem mẫu giao diện của từng actor (đổi ở ô "Xem như" trên topbar).
-// TODO (phần xác thực): thay getCurrentUser() bằng user đăng nhập thật (useAuth).
-export const getCurrentUser = () => {
-  const role = localStorage.getItem('demoRole') || 'librarian';
-  return USERS.find((u) => u.role === role) || USERS[0];
-};
-
 // Ngày "hôm nay" cố định cho dữ liệu mẫu (tính số ngày còn lại / quá hạn)
 export const TODAY = '2026-11-08';
-
-export const setDemoRole = (role) => {
-  localStorage.setItem('demoRole', role);
-  window.location.reload();
-};
 
 export const ROLE_LABELS = {
   admin: { label: 'Quản trị', color: 'coral' },
