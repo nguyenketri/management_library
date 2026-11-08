@@ -2,10 +2,10 @@
 // TODO: gọi GET/PUT /api/users/me
 import PageHeader from '../../components/common/PageHeader';
 import StatusBadge from '../../components/common/StatusBadge';
-import { CURRENT_USER, ROLE_LABELS } from '../../constants/sampleData';
+import { getCurrentUser, ROLE_LABELS } from '../../constants/sampleData';
 
 export default function ProfilePage() {
-  const u = CURRENT_USER;
+  const u = getCurrentUser();
 
   return (
     <>

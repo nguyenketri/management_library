@@ -1,10 +1,10 @@
 // Người phụ trách: Phần xác thực (làm riêng)
 import { Link } from 'react-router-dom';
 import { IconBell, IconSearch, IconLogout, IconUserCircle, IconHome } from '@tabler/icons-react';
-import { CURRENT_USER, ROLE_LABELS } from '../constants/sampleData';
+import { getCurrentUser, setDemoRole, ROLE_LABELS } from '../constants/sampleData';
 
 export default function Topbar() {
-  const user = CURRENT_USER; // TODO: lấy user đang đăng nhập
+  const user = getCurrentUser(); // TODO: lấy user đang đăng nhập
 
   return (
     <header className="app-topbar d-flex align-items-center d-print-none">
@@ -15,6 +15,13 @@ export default function Topbar() {
         </label>
 
         <div className="ms-auto d-flex align-items-center gap-1">
+          {/* CHỈ ĐỂ XEM MẪU giao diện từng vai trò – xóa khi có đăng nhập thật */}
+          <label className="demo-role me-2" title="Xem giao diện theo vai trò">
+            <span>Xem như</span>
+            <select value={user.role} onChange={(e) => setDemoRole(e.target.value)}>
+              {Object.entries(ROLE_LABELS).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+            </select>
+          </label>
           <Link to="/" className="btn btn-ghost btn-icon" title="Trang giới thiệu"><IconHome size={19} /></Link>
           <button className="btn btn-ghost btn-icon position-relative" type="button" title="Thông báo">
             <IconBell size={19} />

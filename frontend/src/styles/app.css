@@ -1270,3 +1270,159 @@ a {
   .auth { grid-template-columns: 1fr; }
   .auth-side { display: none; }
 }
+
+/* ---------- 7. Hộp thoại (Modal) ---------- */
+.app-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(5, 10, 8, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+.app-modal {
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.8);
+}
+
+.app-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem 0.5rem;
+}
+
+.app-modal-body {
+  padding: 1rem 1.5rem 1.5rem;
+}
+
+.app-modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.form-hint {
+  font-size: 0.82rem;
+  color: var(--text-3);
+}
+
+/* Ô "Xem như" (chỉ để xem mẫu từng vai trò) */
+.demo-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.25rem 0.35rem 0.25rem 0.85rem;
+  border: 1px dashed var(--text-3);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  color: var(--text-3);
+}
+
+.demo-role select {
+  background: var(--panel-2);
+  color: var(--text);
+  border: 0;
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  font-weight: 700;
+  font-size: 0.8rem;
+  outline: 0;
+}
+
+/* ---------- 8. Trang của độc giả ---------- */
+.loan {
+  display: flex;
+  gap: 1.1rem;
+  padding: 1.1rem;
+  border-radius: var(--radius);
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+
+.loan .book-3d {
+  width: 74px;
+  flex: none;
+}
+
+.loan .book {
+  padding: 0.5rem 0.45rem 0.45rem 0.7rem;
+}
+
+.loan .book-title {
+  font-size: 0.68rem;
+}
+
+.loan .book-author {
+  display: none;
+}
+
+.loan-days {
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.loan.is-late {
+  border-color: rgba(242, 107, 79, 0.5);
+}
+
+.loan.is-late .loan-days {
+  color: var(--coral);
+}
+
+/* Danh sách việc ở quầy thủ thư */
+.task {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.task:last-child {
+  border-bottom: 0;
+}
+
+.quick {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  border-radius: var(--radius);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--text);
+  text-decoration: none !important;
+  text-align: left;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.quick:hover {
+  border-color: var(--lime);
+  transform: translateY(-2px);
+  color: var(--text);
+}
+
+.quick .ico {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--panel-2);
+  color: var(--lime);
+}

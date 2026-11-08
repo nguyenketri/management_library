@@ -5,17 +5,21 @@ import { Link } from 'react-router-dom';
 import { IconPlus, IconSearch } from '@tabler/icons-react';
 import PageHeader from '../../components/common/PageHeader';
 import BookCover from '../../components/common/BookCover';
-import { BOOKS, CATEGORIES } from '../../constants/sampleData';
+import BookFormModal from './BookFormModal';
+import { BOOKS, CATEGORIES, getCurrentUser } from '../../constants/sampleData';
+import { isStaff } from '../../constants/menu';
 
 export default function BookListPage() {
   const [category, setCategory] = useState('all'); // chỉ để demo giao diện tab
+  const [openForm, setOpenForm] = useState(false);
+  const staff = isStaff(getCurrentUser().role); // chỉ thủ thư / admin được thêm sách
 
   return (
     <>
       <PageHeader
         title="Kho sách"
         subtitle={`${BOOKS.length} đầu sách · 30 cuốn`}
-        actions={<button className="btn btn-primary" type="button"><IconPlus size={17} className="me-1" /> Thêm sách</button>}
+        actions={staff && <button className="btn btn-primary" type="button" onClick={() => setOpenForm(true)}><IconPlus size={17} className="me-1" /> Thêm sách</button>}
       />
       <div className="page-body">
         <div className="container-xl">
@@ -63,6 +67,7 @@ export default function BookListPage() {
           </div>
         </div>
       </div>
+      <BookFormModal open={openForm} onClose={() => setOpenForm(false)} />
     </>
   );
 }

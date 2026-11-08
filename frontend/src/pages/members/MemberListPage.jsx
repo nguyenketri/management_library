@@ -1,20 +1,22 @@
 // Người phụ trách: Người 1 (Thành viên & bạn đọc)
 // TODO: gọi userApi.getAll(role), thêm / sửa / khóa tài khoản
 import { useState } from 'react';
-import { IconUserPlus, IconSearch, IconDots } from '@tabler/icons-react';
+import { IconUserPlus, IconSearch, IconEdit } from '@tabler/icons-react';
 import PageHeader from '../../components/common/PageHeader';
 import StatusBadge from '../../components/common/StatusBadge';
+import MemberFormModal from './MemberFormModal';
 import { USERS, ROLE_LABELS } from '../../constants/sampleData';
 
 export default function MemberListPage() {
   const [role, setRole] = useState('all'); // chỉ để demo giao diện tab
+  const [form, setForm] = useState({ open: false, user: null });
 
   return (
     <>
       <PageHeader
         title="Thành viên"
         subtitle={`${USERS.length} tài khoản`}
-        actions={<button className="btn btn-primary" type="button"><IconUserPlus size={17} className="me-1" /> Thêm thành viên</button>}
+        actions={<button className="btn btn-primary" type="button" onClick={() => setForm({ open: true, user: null })}><IconUserPlus size={17} className="me-1" /> Thêm thành viên</button>}
       />
       <div className="page-body">
         <div className="container-xl">
@@ -51,7 +53,7 @@ export default function MemberListPage() {
                       <td className="text-secondary">{u.phone}</td>
                       <td><StatusBadge value={u.role} map={ROLE_LABELS} /></td>
                       <td className="text-center fw-bold">{u.activeBorrows}</td>
-                      <td><button className="btn btn-ghost btn-icon" type="button"><IconDots size={17} /></button></td>
+                      <td><button className="btn btn-ghost btn-icon" type="button" title="Sửa" onClick={() => setForm({ open: true, user: u })}><IconEdit size={17} /></button></td>
                     </tr>
                   ))}
                 </tbody>
@@ -60,6 +62,7 @@ export default function MemberListPage() {
           </div>
         </div>
       </div>
+      <MemberFormModal open={form.open} user={form.user} onClose={() => setForm({ open: false, user: null })} />
     </>
   );
 }

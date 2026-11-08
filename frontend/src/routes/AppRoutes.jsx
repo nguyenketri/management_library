@@ -5,7 +5,7 @@ import AuthLayout from '../layouts/AuthLayout';
 import LoginPage from '../pages/auth/LoginPage';
 import RegisterPage from '../pages/auth/RegisterPage';
 import LandingPage from '../pages/landing/LandingPage';
-import DashboardPage from '../pages/dashboard/DashboardPage';
+import HomePage from '../pages/dashboard/HomePage';
 import BookListPage from '../pages/books/BookListPage';
 import BookDetailPage from '../pages/books/BookDetailPage';
 import CategoryPage from '../pages/categories/CategoryPage';
@@ -28,7 +28,7 @@ export default function AppRoutes() {
       </Route>
 
       <Route element={<MainLayout />}>
-        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/dashboard" element={<HomePage />} />
         <Route path="/books" element={<BookListPage />} />
         <Route path="/books/:id" element={<BookDetailPage />} />
         <Route path="/categories" element={<CategoryPage />} />
