@@ -1,18 +1,22 @@
 // Người phụ trách: Người 1 (Thành viên & bạn đọc)
 // TODO: gọi /api/cards (danh sách, cấp thẻ, khóa / gia hạn)
+import { useState } from 'react';
 import { IconPlus, IconLock, IconRefresh } from '@tabler/icons-react';
 import PageHeader from '../../components/common/PageHeader';
 import StatusBadge from '../../components/common/StatusBadge';
 import MemberCard from '../../components/common/MemberCard';
+import CardFormModal from './CardFormModal';
 import { CARDS, CARD_STATUS } from '../../constants/sampleData';
 
 export default function CardListPage() {
+  const [openForm, setOpenForm] = useState(false);
+
   return (
     <>
       <PageHeader
         title="Thẻ thư viện"
         subtitle={`${CARDS.length} thẻ đã cấp`}
-        actions={<button className="btn btn-primary" type="button"><IconPlus size={17} className="me-1" /> Cấp thẻ mới</button>}
+        actions={<button className="btn btn-primary" type="button" onClick={() => setOpenForm(true)}><IconPlus size={17} className="me-1" /> Cấp thẻ mới</button>}
       />
       <div className="page-body">
         <div className="container-xl">
@@ -47,6 +51,7 @@ export default function CardListPage() {
           </div>
         </div>
       </div>
+      <CardFormModal open={openForm} onClose={() => setOpenForm(false)} />
     </>
   );
 }

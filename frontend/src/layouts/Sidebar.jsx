@@ -1,7 +1,12 @@
 import { NavLink, Link } from 'react-router-dom';
 import { MENU } from '../constants/menu';
+import { getCurrentUser } from '../constants/sampleData';
 
+// Mỗi vai trò thấy menu riêng (lọc theo roles trong constants/menu.js)
 export default function Sidebar() {
+  const { role } = getCurrentUser();
+  const items = MENU.filter((m) => m.roles.includes(role));
+
   return (
     <aside className="navbar navbar-vertical navbar-expand-lg app-sidebar">
       <div className="container-fluid p-0 d-flex flex-column align-items-stretch h-100">
@@ -15,8 +20,8 @@ export default function Sidebar() {
         <div className="collapse navbar-collapse flex-column align-items-stretch" id="sidebar-menu">
           <div className="app-nav-label">Menu</div>
           <nav className="d-flex flex-column">
-            {MENU.map(({ to, label, icon: Icon }) => (
-              <NavLink key={to} to={to} className="app-nav-link">
+            {items.map(({ to, label, icon: Icon }) => (
+              <NavLink key={to + label} to={to} className="app-nav-link">
                 <Icon size={19} stroke={1.8} />
                 <span>{label}</span>
               </NavLink>

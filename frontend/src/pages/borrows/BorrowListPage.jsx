@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { IconPlus } from '@tabler/icons-react';
 import PageHeader from '../../components/common/PageHeader';
 import StatusBadge from '../../components/common/StatusBadge';
+import BorrowFormModal from './BorrowFormModal';
 import { BORROWS, BORROW_STATUS } from '../../constants/sampleData';
 
 const TABS = [
@@ -15,13 +16,14 @@ const TABS = [
 
 export default function BorrowListPage() {
   const [tab, setTab] = useState('all'); // chỉ để demo giao diện tab
+  const [openForm, setOpenForm] = useState(false);
 
   return (
     <>
       <PageHeader
         title="Mượn / Trả"
         subtitle="Theo dõi phiếu mượn và nhận sách trả"
-        actions={<button className="btn btn-primary" type="button"><IconPlus size={17} className="me-1" /> Lập phiếu mượn</button>}
+        actions={<button className="btn btn-primary" type="button" onClick={() => setOpenForm(true)}><IconPlus size={17} className="me-1" /> Lập phiếu mượn</button>}
       />
       <div className="page-body">
         <div className="container-xl">
@@ -58,6 +60,7 @@ export default function BorrowListPage() {
           </div>
         </div>
       </div>
+      <BorrowFormModal open={openForm} onClose={() => setOpenForm(false)} />
     </>
   );
 }

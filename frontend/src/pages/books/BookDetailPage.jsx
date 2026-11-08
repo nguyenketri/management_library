@@ -1,14 +1,19 @@
 // Người phụ trách: Người 2 (Kho sách)
 // TODO: gọi bookApi.getById(id)
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { IconArrowLeft, IconEdit, IconTrash } from '@tabler/icons-react';
 import BookCover from '../../components/common/BookCover';
 import ReviewSection from './ReviewSection';
-import { BOOKS } from '../../constants/sampleData';
+import BookFormModal from './BookFormModal';
+import { BOOKS, getCurrentUser } from '../../constants/sampleData';
+import { isStaff } from '../../constants/menu';
 
 export default function BookDetailPage() {
   const { id } = useParams();
   const book = BOOKS.find((b) => b._id === id) || BOOKS[0];
+  const [openForm, setOpenForm] = useState(false);
+  const staff = isStaff(getCurrentUser().role);
 
   const info = [
     ['Tác giả', book.author],
@@ -34,12 +39,18 @@ export default function BookDetailPage() {
             <div className="text-secondary fs-3 mb-4">{book.author} · <span className="stars">★ {book.rating}</span></div>
             <p className="fs-3 text-secondary" style={{ maxWidth: '36rem' }}>{book.description}</p>
 
-            <div className="d-flex flex-wrap gap-2 my-4">
-              <button className="btn btn-primary btn-lg" type="button" disabled={book.availableCopies === 0}>
-                {book.availableCopies === 0 ? 'Đã hết sách' : 'Mượn cuốn này'}
-              </button>
-              <button className="btn btn-outline btn-lg" type="button"><IconEdit size={18} className="me-1" /> Sửa</button>
-              <button className="btn btn-outline-danger btn-lg" type="button"><IconTrash size={18} className="me-1" /> Xóa</button>
+            {/* Thủ thư / admin: sửa, xóa · Người khác: chỉ xem tình trạng */}
+            <div className="d-flex flex-wrap align-items-center gap-2 my-4">
+              {staff ? (
+                <>
+                  <button className="btn btn-outline btn-lg" type="button" onClick={() => setOpenForm(true)}><IconEdit size={18} className="me-1" /> Sửa</button>
+                  <button className="btn btn-outline-danger btn-lg" type="button"><IconTrash size={18} className="me-1" /> Xóa</button>
+                </>
+              ) : (
+                <span className={`pill ${book.availableCopies ? 'pill-lime' : 'pill-coral'}`}>
+                  {book.availableCopies ? 'Còn trên kệ · đến quầy thủ thư để mượn' : 'Đã hết sách'}
+                </span>
+              )}
             </div>
 
             <div className="row g-3">
@@ -65,6 +76,7 @@ export default function BookDetailPage() {
           <ReviewSection bookId={book._id} />
         </div>
       </div>
+      <BookFormModal open={openForm} onClose={() => setOpenForm(false)} book={book} />
     </div>
   );
 }

@@ -7,16 +7,24 @@ import {
   IconId,
   IconChartBar,
   IconUserCircle,
+  IconBookmark,
+  IconBuildingStore,
 } from '@tabler/icons-react';
 
-// Menu sidebar. roles: các vai trò nhìn thấy mục này (dùng khi làm phân quyền)
+// Menu sidebar theo từng actor. roles: vai trò nhìn thấy mục này.
+// /dashboard là trang chủ riêng của từng vai trò (xem pages/dashboard/HomePage.jsx)
 export const MENU = [
-  { to: '/dashboard', label: 'Tổng quan', icon: IconLayoutDashboard, roles: ['admin', 'librarian', 'manager', 'member'] },
-  { to: '/books', label: 'Sách', icon: IconBooks, roles: ['admin', 'librarian', 'manager', 'member'] },
-  { to: '/categories', label: 'Danh mục', icon: IconCategory, roles: ['admin', 'librarian'] },
-  { to: '/borrows', label: 'Mượn / Trả', icon: IconArrowsExchange, roles: ['admin', 'librarian', 'member'] },
-  { to: '/members', label: 'Thành viên', icon: IconUsers, roles: ['admin', 'librarian'] },
-  { to: '/cards', label: 'Thẻ thư viện', icon: IconId, roles: ['admin', 'librarian', 'member'] },
-  { to: '/reports', label: 'Báo cáo', icon: IconChartBar, roles: ['admin', 'manager'] },
-  { to: '/profile', label: 'Hồ sơ cá nhân', icon: IconUserCircle, roles: ['admin', 'librarian', 'manager', 'member'] },
+  { to: '/dashboard', label: 'Sách của tôi', icon: IconBookmark, roles: ['member'] },
+  { to: '/dashboard', label: 'Quầy thủ thư', icon: IconBuildingStore, roles: ['librarian'] },
+  { to: '/dashboard', label: 'Tổng quan', icon: IconLayoutDashboard, roles: ['manager', 'admin'] },
+  { to: '/books', label: 'Kho sách', icon: IconBooks, roles: ['member', 'librarian', 'manager', 'admin'] },
+  { to: '/categories', label: 'Danh mục', icon: IconCategory, roles: ['librarian', 'admin'] },
+  { to: '/borrows', label: 'Mượn / Trả', icon: IconArrowsExchange, roles: ['librarian', 'admin'] },
+  { to: '/cards', label: 'Thẻ thư viện', icon: IconId, roles: ['librarian', 'admin'] },
+  { to: '/members', label: 'Thành viên', icon: IconUsers, roles: ['admin'] },
+  { to: '/reports', label: 'Báo cáo', icon: IconChartBar, roles: ['manager', 'admin'] },
+  { to: '/profile', label: 'Hồ sơ cá nhân', icon: IconUserCircle, roles: ['member', 'librarian', 'manager', 'admin'] },
 ];
+
+// Nhân viên được thêm / sửa / xóa sách
+export const isStaff = (role) => role === 'librarian' || role === 'admin';

@@ -1,13 +1,19 @@
 // DỮ LIỆU MẪU CHỈ ĐỂ XEM GIAO DIỆN - chưa nối API.
 // Khi nối API: thay bằng dữ liệu gọi từ src/api/*.js rồi xóa dần file này.
 
-export const CURRENT_USER = {
-  _id: 'u1',
-  name: 'Nguyễn Văn Quản Trị',
-  email: 'admin@library.edu.vn',
-  role: 'admin',
-  phone: '0901234567',
-  studentId: 'ADMIN-01',
+// VAI TRÒ ĐANG XEM – chỉ để xem mẫu giao diện của từng actor (đổi ở ô "Xem như" trên topbar).
+// TODO (phần xác thực): thay getCurrentUser() bằng user đăng nhập thật (useAuth).
+export const getCurrentUser = () => {
+  const role = localStorage.getItem('demoRole') || 'librarian';
+  return USERS.find((u) => u.role === role) || USERS[0];
+};
+
+// Ngày "hôm nay" cố định cho dữ liệu mẫu (tính số ngày còn lại / quá hạn)
+export const TODAY = '2026-11-08';
+
+export const setDemoRole = (role) => {
+  localStorage.setItem('demoRole', role);
+  window.location.reload();
 };
 
 export const ROLE_LABELS = {
@@ -50,10 +56,11 @@ export const USERS = [
 ];
 
 export const BORROWS = [
-  { _id: 'r1', userName: 'Lê Hoàng Nam', bookTitle: 'Clean Code', borrowDate: '2026-10-20', dueDate: '2026-11-03', returnDate: null, status: 'overdue' },
-  { _id: 'r2', userName: 'Phạm Minh Anh', bookTitle: 'Design Patterns', borrowDate: '2026-10-28', dueDate: '2026-11-11', returnDate: null, status: 'borrowed' },
-  { _id: 'r3', userName: 'Đặng Tuấn Kiệt', bookTitle: 'Nhà Giả Kim', borrowDate: '2026-10-01', dueDate: '2026-10-15', returnDate: '2026-10-14', status: 'returned' },
-  { _id: 'r4', userName: 'Lê Hoàng Nam', bookTitle: 'Node.js Web Development', borrowDate: '2026-11-01', dueDate: '2026-11-15', returnDate: null, status: 'borrowed' },
+  { _id: 'r1', userName: 'Lê Hoàng Nam', bookId: 'b1', bookTitle: 'Clean Code', borrowDate: '2026-10-20', dueDate: '2026-11-03', returnDate: null, status: 'overdue' },
+  { _id: 'r2', userName: 'Phạm Minh Anh', bookId: 'b2', bookTitle: 'Design Patterns', borrowDate: '2026-10-28', dueDate: '2026-11-11', returnDate: null, status: 'borrowed' },
+  { _id: 'r3', userName: 'Đặng Tuấn Kiệt', bookId: 'b5', bookTitle: 'Nhà Giả Kim', borrowDate: '2026-10-01', dueDate: '2026-10-15', returnDate: '2026-10-14', status: 'returned' },
+  { _id: 'r4', userName: 'Lê Hoàng Nam', bookId: 'b4', bookTitle: 'Node.js Web Development', borrowDate: '2026-11-01', dueDate: '2026-11-15', returnDate: null, status: 'borrowed' },
+  { _id: 'r5', userName: 'Lê Hoàng Nam', bookId: 'b3', bookTitle: 'The Pragmatic Programmer', borrowDate: '2026-09-02', dueDate: '2026-09-16', returnDate: '2026-09-19', status: 'returned', fine: 15000 },
 ];
 
 export const CARDS = [
