@@ -1,7 +1,7 @@
 import axiosClient from './axiosClient';
 
 const userApi = {
-  // Lấy danh sách 5 thành viên (hỗ trợ lọc theo role)
+  // Lấy danh sách thành viên (hỗ trợ lọc theo role)
   getAll: (role) => {
     return axiosClient.get('/users', { params: role ? { role } : {} });
   },
