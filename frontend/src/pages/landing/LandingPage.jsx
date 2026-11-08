@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { IconArrowRight, IconSearch, IconClockHour4, IconStarFilled } from '@tabler/icons-react';
 import BookCover from '../../components/common/BookCover';
 import MemberCard from '../../components/common/MemberCard';
+import { useAuth } from '../../context/AuthContext';
 import { BOOKS, CARDS, BORROWS } from '../../constants/sampleData';
 
 const STATS = [
@@ -20,6 +21,7 @@ const STEPS = [
 ];
 
 export default function LandingPage() {
+  const { user } = useAuth();
   return (
     <div className="landing">
       {/* ---------- Thanh điều hướng ---------- */}
@@ -32,8 +34,14 @@ export default function LandingPage() {
             <a href="#how">Cách mượn</a>
           </div>
           <div className="d-flex gap-2">
-            <Link to="/login" className="btn btn-ghost">Đăng nhập</Link>
-            <Link to="/register" className="btn btn-primary">Làm thẻ</Link>
+            {user ? (
+              <Link to="/dashboard" className="btn btn-primary">Vào thư viện →</Link>
+            ) : (
+              <>
+                <Link to="/login" className="btn btn-ghost">Đăng nhập</Link>
+                <Link to="/register" className="btn btn-primary">Đăng ký</Link>
+              </>
+            )}
           </div>
         </div>
       </nav>

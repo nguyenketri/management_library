@@ -1,10 +1,17 @@
-// Người phụ trách: Phần xác thực (làm riêng)
-import { Link } from 'react-router-dom';
+// Người phụ trách: Phần xác thực
+import { Link, useNavigate } from 'react-router-dom';
 import { IconBell, IconSearch, IconLogout, IconUserCircle, IconHome } from '@tabler/icons-react';
-import { getCurrentUser, setDemoRole, ROLE_LABELS } from '../constants/sampleData';
+import { useAuth } from '../context/AuthContext';
+import { ROLE_LABELS } from '../constants/sampleData';
 
 export default function Topbar() {
-  const user = getCurrentUser(); // TODO: lấy user đang đăng nhập
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
+  };
 
   return (
     <header className="app-topbar d-flex align-items-center d-print-none">
@@ -15,13 +22,6 @@ export default function Topbar() {
         </label>
 
         <div className="ms-auto d-flex align-items-center gap-1">
-          {/* CHỈ ĐỂ XEM MẪU giao diện từng vai trò – xóa khi có đăng nhập thật */}
-          <label className="demo-role me-2" title="Xem giao diện theo vai trò">
-            <span>Xem như</span>
-            <select value={user.role} onChange={(e) => setDemoRole(e.target.value)}>
-              {Object.entries(ROLE_LABELS).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
-            </select>
-          </label>
           <Link to="/" className="btn btn-ghost btn-icon" title="Trang giới thiệu"><IconHome size={19} /></Link>
           <button className="btn btn-ghost btn-icon position-relative" type="button" title="Thông báo">
             <IconBell size={19} />
@@ -33,12 +33,14 @@ export default function Topbar() {
               <span className="avatar avatar-sm avatar-lime">{user.name.charAt(0)}</span>
               <div className="d-none d-xl-block lh-sm">
                 <div className="fw-bold small">{user.name}</div>
-                <div className="small text-secondary">{ROLE_LABELS[user.role].label}</div>
+                <div className="small text-secondary">{ROLE_LABELS[user.role]?.label}</div>
               </div>
             </a>
             <div className="dropdown-menu dropdown-menu-end p-2">
               <Link to="/profile" className="dropdown-item"><IconUserCircle size={17} className="me-2" /> Hồ sơ cá nhân</Link>
-              <Link to="/login" className="dropdown-item text-danger"><IconLogout size={17} className="me-2" /> Đăng xuất</Link>
+              <button type="button" className="dropdown-item text-danger" onClick={handleLogout}>
+                <IconLogout size={17} className="me-2" /> Đăng xuất
+              </button>
             </div>
           </div>
         </div>
