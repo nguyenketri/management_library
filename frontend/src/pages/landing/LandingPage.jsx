@@ -210,7 +210,7 @@ export default function LandingPage() {
             <div>
               <div className="lp-logo">fu<b>.</b>library</div>
               <p className="text-secondary mt-2 mb-0" style={{ maxWidth: '20rem' }}>
-                Đồ án SDN302 — Node.js, Express, MongoDB & React.
+                Thư viện Đại học FPT – tra cứu, mượn và trả sách trực tuyến.
               </p>
             </div>
             <div>

@@ -46,9 +46,9 @@ export const USERS = [
 export const BORROWS = [
   { _id: 'r1', userName: 'Lê Hoàng Nam', bookId: 'b1', bookTitle: 'Clean Code', borrowDate: '2026-10-20', dueDate: '2026-11-03', returnDate: null, status: 'overdue' },
   { _id: 'r2', userName: 'Phạm Minh Anh', bookId: 'b2', bookTitle: 'Design Patterns', borrowDate: '2026-10-28', dueDate: '2026-11-11', returnDate: null, status: 'borrowed' },
-  { _id: 'r3', userName: 'Đặng Tuấn Kiệt', bookId: 'b5', bookTitle: 'Nhà Giả Kim', borrowDate: '2026-10-01', dueDate: '2026-10-15', returnDate: '2026-10-14', status: 'returned' },
+  { _id: 'r3', userName: 'Đặng Tuấn Kiệt', bookId: 'b5', bookTitle: 'Nhà Giả Kim', borrowDate: '2026-10-01', dueDate: '2026-10-15', returnDate: '2026-10-18', status: 'returned', fine: 15000, finePaid: false },
   { _id: 'r4', userName: 'Lê Hoàng Nam', bookId: 'b4', bookTitle: 'Node.js Web Development', borrowDate: '2026-11-01', dueDate: '2026-11-15', returnDate: null, status: 'borrowed' },
-  { _id: 'r5', userName: 'Lê Hoàng Nam', bookId: 'b3', bookTitle: 'The Pragmatic Programmer', borrowDate: '2026-09-02', dueDate: '2026-09-16', returnDate: '2026-09-19', status: 'returned', fine: 15000 },
+  { _id: 'r5', userName: 'Lê Hoàng Nam', bookId: 'b3', bookTitle: 'The Pragmatic Programmer', borrowDate: '2026-09-02', dueDate: '2026-09-16', returnDate: '2026-09-19', status: 'returned', fine: 15000, finePaid: true, finePaidAt: '2026-09-19' },
 ];
 
 export const CARDS = [
@@ -61,6 +61,19 @@ export const CARD_STATUS = {
   active: { label: 'Còn hiệu lực', color: 'lime' },
   locked: { label: 'Đã khóa', color: 'coral' },
   expired: { label: 'Hết hạn', color: 'muted' },
+};
+
+// Tiền phạt trả trễ (nộp tiền mặt tại quầy)
+export const FINE_PER_DAY = 5000;
+
+export const FINE_STATUS = {
+  paid: { label: 'Đã nộp', color: 'mint' },
+  unpaid: { label: 'Chưa nộp', color: 'coral' },
+};
+
+export const USER_STATUS = {
+  active: { label: 'Hoạt động', color: 'mint' },
+  locked: { label: 'Đã khóa', color: 'coral' },
 };
 
 export const REVIEWS = [

@@ -1,6 +1,7 @@
-// Người phụ trách: Người 3 (Mượn trả & báo cáo)
+// Người phụ trách: Người 3 (Mượn trả & thu phạt)
 // TODO: lấy danh sách độc giả + sách còn trên kệ từ API, gọi borrowApi.borrow
 import Modal from '../../components/common/Modal';
+import Select from '../../components/common/Select';
 import { USERS, BOOKS } from '../../constants/sampleData';
 
 export default function BorrowFormModal({ open, onClose }) {
@@ -21,19 +22,17 @@ export default function BorrowFormModal({ open, onClose }) {
       <div className="row g-3">
         <div className="col-12">
           <label className="form-label">Bạn đọc</label>
-          <select className="form-select">
-            {readers.map((u) => <option key={u._id}>{u.name} · {u.studentId}</option>)}
-          </select>
+          <Select options={readers.map((u) => ({ value: u._id, label: `${u.name} · ${u.studentId}` }))} />
         </div>
         <div className="col-12">
           <label className="form-label">Sách</label>
-          <select className="form-select">
-            {BOOKS.map((b) => (
-              <option key={b._id} disabled={b.availableCopies === 0}>
-                {b.title} {b.availableCopies === 0 ? '(hết sách)' : `(còn ${b.availableCopies})`}
-              </option>
-            ))}
-          </select>
+          <Select
+            options={BOOKS.map((b) => ({
+              value: b._id,
+              label: `${b.title} ${b.availableCopies === 0 ? '(hết sách)' : `(còn ${b.availableCopies})`}`,
+              disabled: b.availableCopies === 0,
+            }))}
+          />
         </div>
         <div className="col-md-6"><label className="form-label">Ngày mượn</label><input type="date" className="form-control" defaultValue="2026-11-08" /></div>
         <div className="col-md-6"><label className="form-label">Hạn trả (14 ngày)</label><input type="date" className="form-control" defaultValue="2026-11-22" /></div>

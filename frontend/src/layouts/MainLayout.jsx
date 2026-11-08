@@ -10,9 +10,6 @@ export default function MainLayout() {
       <div className="page-wrapper">
         <Topbar />
         <Outlet />
-        <footer className="footer footer-transparent d-print-none">
-          <div className="container-xl small">© 2026 fu.library · Đồ án SDN302</div>
-        </footer>
       </div>
     </div>
   );

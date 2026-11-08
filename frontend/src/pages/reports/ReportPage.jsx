@@ -1,4 +1,4 @@
-// Người phụ trách: Người 3 (Lưu thông & báo cáo)
+// Người phụ trách: Người 1 (Báo cáo)
 // TODO: gọi /api/reports/books | readers | borrows | overdue theo tab + bộ lọc ngày
 import { useState } from 'react';
 import { IconDownload } from '@tabler/icons-react';

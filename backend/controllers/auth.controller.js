@@ -40,6 +40,11 @@ exports.login = async (req, resp, next) => {
             return resp.status(401).json({ error: 'Email hoặc mật khẩu không đúng' });
         }
 
+        // Tài khoản bị admin khóa thì không cho đăng nhập
+        if (user.status === 'locked') {
+            return resp.status(403).json({ error: 'Tài khoản đã bị khóa, vui lòng liên hệ thư viện' });
+        }
+
         return resp.status(200).json({
             token: createToken(user),
             user: userInfo(user),
