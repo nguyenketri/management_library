@@ -1,30 +1,26 @@
 import axiosClient from './axiosClient';
 
 const borrowApi = {
-  // Lấy tất cả phiếu mượn (hỗ trợ lọc status: 'borrowed' hoặc 'returned')
+  // Lấy tất cả phiếu mượn (dành cho thủ thư)
   getAll: (status) => {
     return axiosClient.get('/borrows', { params: status ? { status } : {} });
   },
 
-  // Sách đang mượn của 1 độc giả
-  getMyBorrows: (userId) => {
-    return axiosClient.get('/borrows/my-borrows', { params: userId ? { userId } : {} });
-  },
+  // Tất cả phiếu mượn của người đang đăng nhập
+  getMyBorrows: () => axiosClient.get('/borrows/my'),
 
-  // Lịch sử mượn của 1 độc giả
-  getHistory: (userId) => {
-    return axiosClient.get('/borrows/my-history', { params: userId ? { userId } : {} });
-  },
+  // Độc giả đặt mượn online
+  request: (bookId) => axiosClient.post('/borrows/request', { bookId }),
 
-  // Gia hạn sách đang mượn
-  extend: (borrowId, userId) => {
-    return axiosClient.put(`/borrows/extend/${borrowId}`, { userId });
-  },
+  // Hủy yêu cầu đang chờ duyệt
+  cancelRequest: (borrowId) => axiosClient.delete(`/borrows/${borrowId}`),
 
-  // Tiền phạt của độc giả
-  getPenalties: (userId) => {
-    return axiosClient.get('/borrows/my-penalties', { params: userId ? { userId } : {} });
-  },
+  // Thủ thư duyệt hoặc từ chối yêu cầu
+  approve: (borrowId) => axiosClient.patch(`/borrows/${borrowId}/approve`),
+  reject: (borrowId, reason) => axiosClient.patch(`/borrows/${borrowId}/reject`, { reason }),
+
+  // Gia hạn thêm 7 ngày (tối đa một lần)
+  extend: (borrowId) => axiosClient.patch(`/borrows/${borrowId}/extend`),
 
   // Mượn sách
   borrow: (data) => {
@@ -35,6 +31,8 @@ const borrowApi = {
   returnBook: (borrowId) => {
     return axiosClient.put(`/borrows/${borrowId}/return`);
   },
+
+  payFine: (borrowId) => axiosClient.patch(`/borrows/${borrowId}/pay-fine`),
 };
 
 export default borrowApi;

@@ -1,20 +1,24 @@
 import axiosClient from './axiosClient';
 
+// Người phụ trách: Người 1
 const userApi = {
-  // Lấy danh sách 5 thành viên (hỗ trợ lọc theo role)
-  getAll: (role) => {
-    return axiosClient.get('/users', { params: role ? { role } : {} });
-  },
+  // Danh sách thành viên: params = { role, keyword }
+  getAll: (params) => axiosClient.get('/users', { params }),
 
-  // Lấy chi tiết 1 thành viên
-  getById: (id) => {
-    return axiosClient.get(`/users/${id}`);
-  },
+  getById: (id) => axiosClient.get(`/users/${id}`),
 
-  // Thêm thành viên mới
-  create: (data) => {
-    return axiosClient.post('/users', data);
-  },
+  // Admin tạo tài khoản mới
+  create: (data) => axiosClient.post('/users', data),
+
+  // Admin đổi vai trò (không sửa được thông tin cá nhân)
+  updateRole: (id, role) => axiosClient.patch(`/users/${id}/role`, { role }),
+
+  // Khóa / mở tài khoản: status = 'active' | 'locked'
+  updateStatus: (id, status) => axiosClient.patch(`/users/${id}/status`, { status }),
+
+  // Hồ sơ của người đang đăng nhập
+  getMe: () => axiosClient.get('/users/me'),
+  updateMe: (data) => axiosClient.put('/users/me', data),
 };
 
 export default userApi;

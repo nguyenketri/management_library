@@ -1,34 +1,19 @@
-import React, { useEffect } from 'react';
+import { IconX } from '@tabler/icons-react';
 
-export default function Modal({ isOpen, onClose, title, children }) {
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') onClose();
-    };
-
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-      window.addEventListener('keydown', handleKeyDown);
-    }
-
-    return () => {
-      document.body.style.overflow = 'unset';
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
+// Hộp thoại dùng chung:
+// <Modal open={open} title="Thêm sách" onClose={() => setOpen(false)} footer={<button/>}>...</Modal>
+export default function Modal({ open, title, onClose, children, footer, width = 560 }) {
+  if (!open) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2 className="modal-title">{title}</h2>
-          <button className="btn-close" onClick={onClose} aria-label="Close modal">
-            &times;
-          </button>
+    <div className="app-modal-backdrop" onClick={onClose}>
+      <div className="app-modal" style={{ maxWidth: width }} onClick={(e) => e.stopPropagation()}>
+        <div className="app-modal-head">
+          <h3 className="mb-0">{title}</h3>
+          <button type="button" className="btn btn-ghost btn-icon" onClick={onClose} aria-label="Đóng"><IconX size={19} /></button>
         </div>
-        {children}
+        <div className="app-modal-body">{children}</div>
+        {footer && <div className="app-modal-foot">{footer}</div>}
       </div>
     </div>
   );
