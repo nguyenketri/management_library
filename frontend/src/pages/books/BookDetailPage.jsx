@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { IconArrowLeft, IconEdit, IconTrash } from '@tabler/icons-react';
 import BookCover from '../../components/common/BookCover';
 import ReviewSection from './ReviewSection';
@@ -13,13 +13,16 @@ const isMongoId = (value) => /^[a-f\d]{24}$/i.test(value);
 
 export default function BookDetailPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [bookLoad, setBookLoad] = useState({ id: null, book: null, error: '', loading: true });
   const [openForm, setOpenForm] = useState(false);
   const [requesting, setRequesting] = useState(false);
   const [requestedBookId, setRequestedBookId] = useState('');
   const [requestErrorState, setRequestErrorState] = useState({ id: null, error: '' });
+  const [deleting, setDeleting] = useState(false);
+
   const user = useAuth().user;
-  const staff = isStaff(user.role);
+  const staff = isStaff(user?.role);
   const validBookId = isMongoId(id);
   const book = validBookId && bookLoad.id === id ? bookLoad.book : null;
   const loading = validBookId && (bookLoad.id !== id || bookLoad.loading);
@@ -29,18 +32,19 @@ export default function BookDetailPage() {
     : bookLoad.id === id ? bookLoad.error : '');
   const requested = requestedBookId === id;
 
-  useEffect(() => {
-    if (!isMongoId(id)) return undefined;
-
-    let active = true;
+  const fetchBookDetail = () => {
+    if (!isMongoId(id)) return;
     bookApi.getById(id)
       .then((result) => {
-        if (active) setBookLoad({ id, book: result, error: '', loading: false });
+        setBookLoad({ id, book: result, error: '', loading: false });
       })
       .catch((err) => {
-        if (active) setBookLoad({ id, book: null, error: err.message, loading: false });
+        setBookLoad({ id, book: null, error: err.message, loading: false });
       });
-    return () => { active = false; };
+  };
+
+  useEffect(() => {
+    fetchBookDetail();
   }, [id]);
 
   const handleRequest = async () => {
@@ -60,6 +64,20 @@ export default function BookDetailPage() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!book) return;
+    if (window.confirm(`Bạn có chắc chắn muốn xóa cuốn sách "${book.title}" khỏi thư viện?`)) {
+      setDeleting(true);
+      try {
+        await bookApi.delete(book._id);
+        navigate('/books');
+      } catch (err) {
+        alert(err.message || 'Không thể xóa cuốn sách này');
+        setDeleting(false);
+      }
+    }
+  };
+
   if (!book) {
     return (
       <div className="page-body">
@@ -74,10 +92,10 @@ export default function BookDetailPage() {
   const info = [
     ['Tác giả', book.author],
     ['Danh mục', book.category],
-    ['Nhà xuất bản', book.publisher],
-    ['Năm', book.publishedYear],
-    ['Số trang', book.pages],
-    ['ISBN', book.isbn],
+    ['Nhà xuất bản', book.publisher || 'Đang cập nhật'],
+    ['Năm', book.publishedYear || '—'],
+    ['Số trang', book.pages || '—'],
+    ['ISBN', book.isbn || '—'],
   ];
 
   return (
@@ -92,20 +110,38 @@ export default function BookDetailPage() {
           <div className="col">
             <span className="pill pill-lilac mb-3">{book.category}</span>
             <h1 className="display-5 fw-bold mb-2" style={{ letterSpacing: '-0.045em' }}>{book.title}</h1>
-            <div className="text-secondary fs-3 mb-4">{book.author} · <span className="stars">★ {book.rating}</span></div>
-            <p className="fs-3 text-secondary" style={{ maxWidth: '36rem' }}>{book.description}</p>
+            <div className="text-secondary fs-3 mb-4">
+              {book.author} · <span className="stars">★ {book.rating || 5}</span>
+            </div>
+            <p className="fs-3 text-secondary" style={{ maxWidth: '36rem' }}>
+              {book.description || 'Chưa có phần giới thiệu cho cuốn sách này.'}
+            </p>
 
             {/* Thủ thư / admin: sửa, xóa · Người khác: chỉ xem tình trạng */}
             <div className="d-flex flex-wrap align-items-center gap-2 my-4">
               {staff ? (
                 <>
-                  <button className="btn btn-outline btn-lg" type="button" onClick={() => setOpenForm(true)}><IconEdit size={18} className="me-1" /> Sửa</button>
-                  <button className="btn btn-outline-danger btn-lg" type="button"><IconTrash size={18} className="me-1" /> Xóa</button>
+                  <button className="btn btn-outline btn-lg" type="button" onClick={() => setOpenForm(true)}>
+                    <IconEdit size={18} className="me-1" /> Sửa
+                  </button>
+                  <button
+                    className="btn btn-outline-danger btn-lg"
+                    type="button"
+                    disabled={deleting}
+                    onClick={handleDelete}
+                  >
+                    <IconTrash size={18} className="me-1" /> {deleting ? 'Đang xóa…' : 'Xóa'}
+                  </button>
                 </>
               ) : (
                 <>
-                  {user.role === 'member' ? (
-                    <button className="btn btn-primary btn-lg" type="button" disabled={!isMongoId(book._id) || !book.availableCopies || requesting || requested} onClick={handleRequest}>
+                  {user?.role === 'member' ? (
+                    <button
+                      className="btn btn-primary btn-lg"
+                      type="button"
+                      disabled={!isMongoId(book._id) || !book.availableCopies || requesting || requested}
+                      onClick={handleRequest}
+                    >
                       {requesting ? 'Đang gửi yêu cầu…' : requested ? 'Đã đặt mượn · chờ thủ thư duyệt' : 'Đặt mượn'}
                     </button>
                   ) : (
@@ -139,16 +175,31 @@ export default function BookDetailPage() {
                 <span className="text-secondary">Còn trên kệ</span>
                 <span className="fw-bold">{book.availableCopies} / {book.totalCopies} cuốn</span>
               </div>
-              <div className="progress"><div className="progress-bar" style={{ width: `${(book.availableCopies / book.totalCopies) * 100}%` }} /></div>
+              <div className="progress">
+                <div
+                  className="progress-bar"
+                  style={{
+                    width: `${book.totalCopies ? (book.availableCopies / book.totalCopies) * 100 : 0}%`,
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
 
         <div className="mt-6 pt-5">
-          <ReviewSection bookId={book._id} />
+          <ReviewSection
+            bookId={book._id}
+            onReviewAdded={() => fetchBookDetail()}
+          />
         </div>
       </div>
-      <BookFormModal open={openForm} onClose={() => setOpenForm(false)} book={book} />
+      <BookFormModal
+        open={openForm}
+        onClose={() => setOpenForm(false)}
+        book={book}
+        onSuccess={(updated) => setBookLoad({ id, book: updated, error: '', loading: false })}
+      />
     </div>
   );
 }

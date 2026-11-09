@@ -5,9 +5,15 @@ const { Schema, model } = require('mongoose');
 const categorySchema = new Schema({
     name: {
         type: String,
-        // TODO: required, unique, trim
+        required: [true, 'Vui lòng nhập tên danh mục'],
+        unique: true,
+        trim: true,
     },
-    description: { type: String },
+    description: {
+        type: String,
+        trim: true,
+        default: '',
+    },
 }, {
     collection: 'categories',
     timestamps: true,

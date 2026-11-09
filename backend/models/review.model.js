@@ -1,4 +1,4 @@
-// models/review.model.js - collection "reviews" (Đánh giá sách (n review - 1 sách, n review - 1 user))
+// models/review.model.js - collection "reviews" (Đánh giá sách)
 // Người phụ trách: Người 2
 const { Schema, model } = require('mongoose');
 
@@ -6,19 +6,37 @@ const reviewSchema = new Schema({
     bookId: {
         type: Schema.Types.ObjectId,
         ref: 'Book',
+        required: [true, 'Vui lòng cung cấp ID sách'],
     },
     userId: {
         type: Schema.Types.ObjectId,
         ref: 'User',
+        required: [true, 'Vui lòng cung cấp ID người dùng'],
     },
-    rating: { type: Number }, // TODO: min 1, max 5
-    comment: { type: String },
+    userName: {
+        type: String,
+        trim: true,
+    },
+    rating: {
+        type: Number,
+        required: [true, 'Vui lòng chọn số sao đánh giá'],
+        min: [1, 'Đánh giá tối thiểu 1 sao'],
+        max: [5, 'Đánh giá tối đa 5 sao'],
+    },
+    comment: {
+        type: String,
+        required: [true, 'Vui lòng nhập nội dung đánh giá'],
+        trim: true,
+    },
 }, {
     collection: 'reviews',
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
 });
+
+// Mỗi bạn đọc chỉ viết 1 đánh giá cho 1 cuốn sách
+reviewSchema.index({ bookId: 1, userId: 1 }, { unique: true });
 
 const Review = model('Review', reviewSchema);
 module.exports = Review;

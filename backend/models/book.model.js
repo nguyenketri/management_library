@@ -1,4 +1,5 @@
 // models/book.model.js - collection "books" (Sách)
+// Người phụ trách: Người 2
 const { Schema, model } = require('mongoose');
 
 const bookSchema = new Schema({
@@ -24,6 +25,14 @@ const bookSchema = new Schema({
         trim: true,
     },
     publishedYear: { type: Number },
+    publisher: { type: String, trim: true },
+    pages: { type: Number },
+    rating: {
+        type: Number,
+        default: 5,
+        min: 1,
+        max: 5,
+    },
     totalCopies: {
         type: Number,
         default: 1,

@@ -1,8 +1,9 @@
 import axiosClient from './axiosClient';
 
-// TODO: bổ sung theo API /api/reviews
 const reviewApi = {
-  getAll: (params) => axiosClient.get('/reviews', { params }),
+  getByBookId: (bookId) => axiosClient.get('/reviews', { params: { bookId } }),
+  create: (data) => axiosClient.post('/reviews', data),
+  delete: (id) => axiosClient.delete(`/reviews/${id}`),
 };
 
 export default reviewApi;

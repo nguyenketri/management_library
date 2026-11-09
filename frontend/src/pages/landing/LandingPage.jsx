@@ -1,11 +1,13 @@
 // Người phụ trách: Người 2 (Kho sách)
 // Trang giới thiệu công khai — trang đầu tiên người xem thấy khi mở web
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { IconArrowRight, IconSearch, IconClockHour4, IconStarFilled } from '@tabler/icons-react';
 import BookCover from '../../components/common/BookCover';
 import MemberCard from '../../components/common/MemberCard';
 import { useAuth } from '../../context/AuthContext';
 import { BOOKS, CARDS, BORROWS } from '../../constants/sampleData';
+import bookApi from '../../api/bookApi';
 
 const STATS = [
   ['1.200+', 'đầu sách trên kệ'],
@@ -22,6 +24,22 @@ const STEPS = [
 
 export default function LandingPage() {
   const { user } = useAuth();
+  const [shelfBooks, setShelfBooks] = useState(BOOKS);
+
+  useEffect(() => {
+    let active = true;
+    bookApi.getAll({ limit: 8 })
+      .then((data) => {
+        if (!active) return;
+        const list = Array.isArray(data?.books) ? data.books : Array.isArray(data) ? data : [];
+        if (list.length > 0) {
+          setShelfBooks(list);
+        }
+      })
+      .catch(() => {});
+    return () => { active = false; };
+  }, []);
+
   return (
     <div className="landing">
       {/* ---------- Thanh điều hướng ---------- */}
@@ -75,9 +93,9 @@ export default function LandingPage() {
           </div>
 
           <div className="lp-books">
-            <div className="float f1"><BookCover book={BOOKS[4]} /></div>
-            <div className="float f2"><BookCover book={BOOKS[0]} /></div>
-            <div className="float f3"><BookCover book={BOOKS[1]} /></div>
+            <div className="float f1"><BookCover book={shelfBooks[2] || BOOKS[4]} /></div>
+            <div className="float f2"><BookCover book={shelfBooks[0] || BOOKS[0]} /></div>
+            <div className="float f3"><BookCover book={shelfBooks[1] || BOOKS[1]} /></div>
 
             <div className="lp-chip lp-chip-1">
               <span className="ico"><IconClockHour4 size={18} /></span>
@@ -117,7 +135,7 @@ export default function LandingPage() {
             <Link to="/books" className="btn btn-outline">Xem cả kho <IconArrowRight size={17} className="ms-1" /></Link>
           </div>
           <div className="lp-shelf">
-            {BOOKS.map((b) => (
+            {shelfBooks.map((b) => (
               <Link key={b._id} to={`/books/${b._id}`} className="book-tile">
                 <BookCover book={b} />
                 <div className="meta">
