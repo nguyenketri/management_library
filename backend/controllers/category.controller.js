@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 const Category = require('../models/category.model');
 const Book = require('../models/book.model');
+const { bodyObject, text, escapeRegex } = require('../utils/validation');
 
 // [GET] /api/categories - Lấy danh sách danh mục kèm số lượng sách
 exports.getCategories = async (req, resp, next) => {
@@ -29,14 +30,16 @@ exports.getCategories = async (req, resp, next) => {
 // [POST] /api/categories - Thêm danh mục mới (thủ thư)
 exports.createCategory = async (req, resp, next) => {
     try {
-        const { name, description } = req.body;
+        const body = bodyObject(req.body);
+        const name = body.name === undefined && req.params.id ? undefined : text(body.name, 'Tên danh mục', 100, true);
+        const description = body.description === undefined ? undefined : text(body.description, 'Mô tả', 2000);
 
         if (!name || name.trim() === '') {
             return resp.status(400).json({ error: 'Vui lòng nhập tên danh mục' });
         }
 
         const trimmedName = name.trim();
-        const existing = await Category.findOne({ name: { $regex: `^${trimmedName}$`, $options: 'i' } });
+        const existing = await Category.findOne({ name: { $regex: `^${escapeRegex(trimmedName)}$`, $options: 'i' } });
         if (existing) {
             return resp.status(400).json({ error: `Danh mục "${trimmedName}" đã tồn tại` });
         }
@@ -59,7 +62,9 @@ exports.createCategory = async (req, resp, next) => {
 exports.updateCategory = async (req, resp, next) => {
     try {
         const { id } = req.params;
-        const { name, description } = req.body;
+        const body = bodyObject(req.body);
+        const name = body.name === undefined && req.params.id ? undefined : text(body.name, 'Tên danh mục', 100, true);
+        const description = body.description === undefined ? undefined : text(body.description, 'Mô tả', 2000);
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return resp.status(400).json({ error: `Invalid categoryId: ${id}` });
@@ -77,7 +82,7 @@ exports.updateCategory = async (req, resp, next) => {
             if (trimmedName.toLowerCase() !== oldName.toLowerCase()) {
                 const duplicate = await Category.findOne({
                     _id: { $ne: id },
-                    name: { $regex: `^${trimmedName}$`, $options: 'i' },
+                    name: { $regex: `^${escapeRegex(trimmedName)}$`, $options: 'i' },
                 });
                 if (duplicate) {
                     return resp.status(400).json({ error: `Danh mục "${trimmedName}" đã tồn tại` });

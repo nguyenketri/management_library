@@ -3,15 +3,19 @@
 const mongoose = require('mongoose');
 const Book = require('../models/book.model');
 const Category = require('../models/category.model');
+const Borrow = require('../models/borrow.model');
+const { bookData, text, integer, escapeRegex, badRequest } = require('../utils/validation');
 
 // [GET] /api/books?keyword=...&category=...&page=...&limit=...
 exports.getBooks = async (req, resp, next) => {
     try {
-        const { keyword, category, page, limit } = req.query;
+        const { page, limit } = req.query;
+        const keyword = req.query.keyword === undefined ? '' : text(req.query.keyword, 'Từ khóa', 200);
+        const category = req.query.category === undefined ? '' : text(req.query.category, 'Danh mục', 100);
         const filter = {};
 
         if (keyword && keyword.trim() !== '') {
-            const regex = { $regex: keyword.trim(), $options: 'i' };
+            const regex = { $regex: escapeRegex(keyword.trim()), $options: 'i' };
             filter.$or = [
                 { title: regex },
                 { author: regex },
@@ -25,8 +29,8 @@ exports.getBooks = async (req, resp, next) => {
 
         // Nếu có truyền param phân trang (page hoặc limit)
         if (page !== undefined || limit !== undefined) {
-            const pageNum = Math.max(1, parseInt(page, 10) || 1);
-            const pageSize = Math.max(1, parseInt(limit, 10) || 12);
+            const pageNum = page === undefined ? 1 : integer(page, 'Trang', 1, 1000000);
+            const pageSize = limit === undefined ? 12 : integer(limit, 'Số sách mỗi trang', 1, 100);
             const skip = (pageNum - 1) * pageSize;
 
             const [total, books] = await Promise.all([
@@ -74,43 +78,12 @@ exports.getBookById = async (req, resp, next) => {
 // [POST] /api/books (chỉ thủ thư)
 exports.createBook = async (req, resp, next) => {
     try {
-        const { title, author, category, totalCopies, availableCopies } = req.body;
-
-        if (!title || !title.trim()) {
-            return resp.status(400).json({ error: 'Vui lòng nhập tên sách' });
-        }
-        if (!author || !author.trim()) {
-            return resp.status(400).json({ error: 'Vui lòng nhập tên tác giả' });
-        }
-
-        // Kiểm tra danh mục có tồn tại trong hệ thống không
-        if (category && category.trim() !== '') {
-            const categoryExists = await Category.findOne({
-                name: { $regex: `^${category.trim()}$`, $options: 'i' },
-            });
-            if (!categoryExists) {
-                return resp.status(400).json({ error: `Danh mục "${category}" không tồn tại trong hệ thống` });
-            }
-        }
-
-        const total = totalCopies !== undefined && totalCopies !== '' ? Number(totalCopies) : 1;
-        const available = availableCopies !== undefined && availableCopies !== '' ? Number(availableCopies) : total;
-
-        if (!Number.isInteger(total) || total < 0 || !Number.isInteger(available) || available < 0) {
-            return resp.status(400).json({ error: 'Số lượng sách phải là số nguyên >= 0' });
-        }
-        if (available > total) {
-            return resp.status(400).json({ error: 'Số lượng khả dụng không được lớn hơn tổng số lượng' });
-        }
-
-        const book = await Book.create({
-            ...req.body,
-            title: title.trim(),
-            author: author.trim(),
-            category: category?.trim() || 'Chung',
-            totalCopies: total,
-            availableCopies: available,
-        });
+        const data = bookData(req.body, true);
+        const category = await Category.findOne({ name: { $regex: '^' + escapeRegex(data.category) + '$', $options: 'i' } });
+        if (!category) badRequest('Danh mục không tồn tại trong hệ thống');
+        data.category = category.name;
+        if (data.availableCopies > data.totalCopies) badRequest('Số lượng khả dụng không được lớn hơn tổng số lượng');
+        const book = await Book.create(data);
 
         return resp.status(201).json(book);
     } catch (error) {
@@ -132,24 +105,20 @@ exports.updateBook = async (req, resp, next) => {
             return resp.status(404).json({ error: `Book with id = ${id} not found` });
         }
 
-        const { _id, ...data } = req.body;
-
-        // Nếu cập nhật danh mục, kiểm tra danh mục có tồn tại không
-        if (data.category && data.category.trim() !== '') {
-            const categoryExists = await Category.findOne({
-                name: { $regex: `^${data.category.trim()}$`, $options: 'i' },
-            });
-            if (!categoryExists) {
-                return resp.status(400).json({ error: `Danh mục "${data.category}" không tồn tại trong hệ thống` });
-            }
-            data.category = categoryExists.name; // Chuẩn hóa hoa thường theo tên danh mục trong DB
+        const data = bookData(req.body);
+        if (data.category !== undefined) {
+            const category = await Category.findOne({ name: { $regex: '^' + escapeRegex(data.category) + '$', $options: 'i' } });
+            if (!category) badRequest('Danh mục không tồn tại trong hệ thống');
+            data.category = category.name;
         }
-
+        const total = data.totalCopies ?? book.totalCopies;
+        const available = data.availableCopies ?? book.availableCopies;
+        if (available > total) badRequest('Số lượng khả dụng không được lớn hơn tổng số lượng');
+        if (data.totalCopies !== undefined || data.availableCopies !== undefined) {
+            const activeLoans = await Borrow.countDocuments({ bookId: id, status: { $in: ['borrowed', 'overdue'] } });
+            if (total - available !== activeLoans) badRequest('Số lượng phải khớp với số bản đang cho mượn');
+        }
         Object.assign(book, data);
-
-        if (book.availableCopies > book.totalCopies) {
-            return resp.status(400).json({ error: 'Số lượng khả dụng không được lớn hơn tổng số lượng' });
-        }
 
         await book.save();
         return resp.status(200).json(book);
@@ -167,6 +136,9 @@ exports.deleteBook = async (req, resp, next) => {
             return resp.status(400).json({ error: `Invalid bookId: ${id}` });
         }
 
+        if (await Borrow.exists({ bookId: id, status: { $in: ['pending', 'borrowed', 'overdue'] } })) {
+            badRequest('Không thể xóa sách có yêu cầu chờ duyệt hoặc đang cho mượn');
+        }
         const deleted = await Book.findByIdAndDelete(id);
         if (!deleted) {
             return resp.status(404).json({ error: `Book with id = ${id} not found` });

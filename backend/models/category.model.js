@@ -6,6 +6,7 @@ const categorySchema = new Schema({
     name: {
         type: String,
         required: [true, 'Vui lòng nhập tên danh mục'],
+        maxlength: 100,
         unique: true,
         trim: true,
     },
@@ -13,6 +14,7 @@ const categorySchema = new Schema({
         type: String,
         trim: true,
         default: '',
+        maxlength: 2000,
     },
 }, {
     collection: 'categories',

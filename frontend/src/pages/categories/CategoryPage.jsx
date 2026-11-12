@@ -57,6 +57,9 @@ export default function CategoryPage() {
       return;
     }
 
+    if (name.trim().length > 100 || description.trim().length > 2000) {
+      setActionError('Tên danh mục tối đa 100 ký tự, mô tả tối đa 2000 ký tự.'); return;
+    }
     setSubmitting(true);
     setActionError('');
 

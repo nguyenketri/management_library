@@ -93,8 +93,21 @@ export default function BookFormModal({ open, onClose, book, onSuccess }) {
       return;
     }
 
-    const total = Number(form.totalCopies) || 0;
-    const available = Number(form.availableCopies) || 0;
+    const total = Number(form.totalCopies);
+    const available = Number(form.availableCopies);
+    if ([form.totalCopies, form.availableCopies].some(v => String(v).trim() === '') || !Number.isSafeInteger(total) || !Number.isSafeInteger(available) || total < 0 || available < 0) {
+      setError('Số lượng sách phải là số nguyên không âm và không được để trống.');
+      return;
+    }
+    if (form.pages !== '' && (!Number.isSafeInteger(Number(form.pages)) || Number(form.pages) < 1)) {
+      setError('Số trang phải là số nguyên dương.'); return;
+    }
+    if (form.publishedYear !== '' && (!Number.isInteger(Number(form.publishedYear)) || Number(form.publishedYear) < 1 || Number(form.publishedYear) > new Date().getFullYear())) {
+      setError('Năm xuất bản phải là số nguyên từ 1 đến năm hiện tại.'); return;
+    }
+    if (form.title.trim().length > 200 || form.author.trim().length > 150 || form.publisher.trim().length > 200 || form.description.trim().length > 5000 || form.isbn.trim().length > 32) {
+      setError('Thông tin quá dài: tên sách/nhà xuất bản tối đa 200, tác giả 150, ISBN 32, mô tả 5000 ký tự.'); return;
+    }
     if (available > total) {
       setError('Số lượng khả dụng không được lớn hơn tổng số lượng.');
       return;

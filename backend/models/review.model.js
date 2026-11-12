@@ -20,12 +20,14 @@ const reviewSchema = new Schema({
     rating: {
         type: Number,
         required: [true, 'Vui lòng chọn số sao đánh giá'],
-        min: [1, 'Đánh giá tối thiểu 1 sao'],
+        validate: { validator: value => Number.isInteger(value * 2), message: 'Điểm phải theo bước 0,5 sao' },
+        min: [0.5, 'Đánh giá tối thiểu 0,5 sao'],
         max: [5, 'Đánh giá tối đa 5 sao'],
     },
     comment: {
         type: String,
         required: [true, 'Vui lòng nhập nội dung đánh giá'],
+        maxlength: 2000,
         trim: true,
     },
 }, {

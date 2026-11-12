@@ -5,29 +5,27 @@ import { useAuth } from '../../context/AuthContext';
 import reviewApi from '../../api/reviewApi';
 
 const InteractiveStars = ({ value, onChange }) => (
-  <span className="stars fs-2" style={{ cursor: 'pointer', userSelect: 'none' }}>
+  <span className="stars fs-2" role="group" aria-label="Chọn điểm đánh giá" style={{ userSelect: 'none' }}>
     {[1, 2, 3, 4, 5].map((star) => (
       <span
         key={star}
-        onClick={() => onChange(star)}
-        style={{
-          color: star <= value ? 'var(--amber)' : 'rgba(255, 255, 255, 0.2)',
-          paddingRight: '4px',
-          display: 'inline-block',
-          transition: 'transform 0.1s',
-        }}
-        title={`${star} sao`}
+        style={{ position: 'relative', display: 'inline-block' }}
       >
-        ★
+        <StaticStars value={Math.max(0, Math.min(1, value - star + 1))} single />
+        {[star - 0.5, star].map((score, half) => (
+          <button key={score} type="button" aria-label={`${score} sao`} title={`${score} sao`}
+            aria-pressed={value === score} onClick={() => onChange(score)}
+            style={{ position: 'absolute', top: 0, bottom: 0, left: `${half * 50}%`, width: '50%', padding: 0, border: 0, background: 'transparent', cursor: 'pointer' }} />
+        ))}
       </span>
     ))}
   </span>
 );
 
-const StaticStars = ({ value }) => (
-  <span className="stars">
-    {'★'.repeat(Math.round(value || 5))}
-    <span style={{ opacity: 0.25 }}>{'★'.repeat(Math.max(0, 5 - Math.round(value || 5)))}</span>
+const StaticStars = ({ value, single = false }) => (
+  <span className="stars" role="img" aria-label={`${value} sao`} style={{ position: 'relative', display: 'inline-block', whiteSpace: 'nowrap', verticalAlign: 'middle' }}>
+    <span style={{ opacity: 0.25 }}>{'★'.repeat(single ? 1 : 5)}</span>
+    <span aria-hidden="true" style={{ position: 'absolute', left: 0, top: 0, overflow: 'hidden', width: `${Math.max(0, Math.min(1, value / (single ? 1 : 5))) * 100}%`, color: 'var(--amber)' }}>{'★'.repeat(single ? 1 : 5)}</span>
   </span>
 );
 
@@ -71,6 +69,9 @@ export default function ReviewSection({ bookId, onReviewAdded }) {
       return;
     }
 
+    if (comment.trim().length > 2000 || !Number.isInteger(rating * 2) || rating < 0.5 || rating > 5) {
+      setSubmitError('Nhận xét tối đa 2000 ký tự, điểm từ 0,5 đến 5 sao theo bước 0,5.'); return;
+    }
     setSubmitting(true);
     setSubmitError('');
     setSubmitSuccess('');

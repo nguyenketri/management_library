@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const Review = require('../models/review.model');
 const Book = require('../models/book.model');
 const Borrow = require('../models/borrow.model');
+const { bodyObject, text, reviewRating } = require('../utils/validation');
 
 // [GET] /api/reviews?bookId=...
 exports.getReviews = async (req, resp, next) => {
@@ -39,7 +40,10 @@ exports.getReviews = async (req, resp, next) => {
 // [POST] /api/reviews - Viết đánh giá (chỉ khi đã mượn sách)
 exports.createReview = async (req, resp, next) => {
     try {
-        const { bookId, rating, comment } = req.body;
+        const body = bodyObject(req.body);
+        const bookId = text(body.bookId, 'ID sách', 24, true);
+        const rating = body.rating;
+        const comment = text(body.comment, 'Nhận xét', 2000, true);
         const userId = req.user?.id;
 
         if (!userId) {
@@ -49,10 +53,7 @@ exports.createReview = async (req, resp, next) => {
             return resp.status(400).json({ error: 'ID sách không hợp lệ' });
         }
 
-        const numericRating = Number(rating);
-        if (!numericRating || numericRating < 1 || numericRating > 5) {
-            return resp.status(400).json({ error: 'Đánh giá phải từ 1 đến 5 sao' });
-        }
+        const numericRating = reviewRating(rating);
         if (!comment || !comment.trim()) {
             return resp.status(400).json({ error: 'Vui lòng nhập nội dung đánh giá' });
         }
